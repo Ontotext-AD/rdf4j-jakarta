@@ -12,9 +12,9 @@ package org.eclipse.rdf4j.federated.server;
 
 import java.io.File;
 
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 public class EmbeddedServer {
 
@@ -39,7 +39,7 @@ public class EmbeddedServer {
 		jetty.addConnector(conn);
 
 		WebAppContext webapp = new WebAppContext();
-		webapp.getServerClasspathPattern().add("org.slf4j.", "ch.qos.logback.");
+		// TODO: spring webapp.getServerClasspathPattern().add("org.slf4j.", "ch.qos.logback.");
 		webapp.setContextPath(contextPath);
 		webapp.setTempDirectory(new File("temp/webapp/"));
 		webapp.setWar(warPath);

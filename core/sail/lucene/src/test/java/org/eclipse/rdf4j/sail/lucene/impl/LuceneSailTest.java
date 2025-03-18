@@ -13,7 +13,7 @@ package org.eclipse.rdf4j.sail.lucene.impl;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 
 public class LuceneSailTest extends AbstractGenericLuceneTest {
@@ -22,7 +22,7 @@ public class LuceneSailTest extends AbstractGenericLuceneTest {
 
 	@Override
 	protected void configure(LuceneSail sail) throws IOException {
-		index = new LuceneIndex(new RAMDirectory(), new StandardAnalyzer());
+		index = new LuceneIndex(new ByteBuffersDirectory(), new StandardAnalyzer());
 		sail.setLuceneIndex(index);
 	}
 }

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.rdf4j</groupId>
 	<artifactId>rdf4j</artifactId>
-	<version>5.1.2</version>
+	<version>5.1.2-jakarta</version>
 	<packaging>pom</packaging>
 	<name>Eclipse RDF4J</name>
 	<description>An extensible Java framework for RDF and SPARQL</description>
@@ -51,12 +51,6 @@
 	<profiles>
 		<profile>
 			<id>ossrh</id>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				</snapshotRepository>
-			</distributionManagement>
 			<build>
 				<plugins>
 					<plugin>
@@ -365,19 +359,22 @@
 		<jackson.version>2.13.5</jackson.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<jsonldjava.version>0.13.4</jsonldjava.version>
-		<last.japicmp.compare.version>5.0.0</last.japicmp.compare.version>
+		<last.japicmp.compare.version>6.0.0</last.japicmp.compare.version>
 		<jaxb.version>2.3.8</jaxb.version>
 		<lwjgl.version>3.3.6</lwjgl.version>
-		<lucene.version>8.9.0</lucene.version>
-		<solr.version>8.9.0</solr.version>
-		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<spring.version>5.3.37</spring.version>
+		<lucene.version>9.11.1</lucene.version>
+		<solr.version>9.8.0</solr.version>
+		<elasticsearch.version>8.17.2</elasticsearch.version>
+		<spring.version>6.2.1</spring.version>
 		<guava.version>32.1.3-jre</guava.version>
 		<jmhVersion>1.37</jmhVersion>
-		<servlet.version>4.0.0</servlet.version>
+		<servlet.version>6.1.0</servlet.version>
 		<junit.version>5.9.3</junit.version>
-		<jetty.version>9.4.54.v20240208</jetty.version>
+		<jetty.version>12.1.0.alpha1</jetty.version>
 		<netty.version>4.1.111.Final</netty.version>
+		<!-- Ontotext repos -->
+		<internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
+		<snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -892,7 +889,7 @@
 				<plugin>
 					<groupId>com.github.siom79.japicmp</groupId>
 					<artifactId>japicmp-maven-plugin</artifactId>
-					<version>0.18.3</version>
+					<version>0.23.1</version>
 					<configuration>
 						<oldVersion>
 							<dependency>
@@ -911,6 +908,7 @@
 							<onlyModified>true</onlyModified>
 							<breakBuildBasedOnSemanticVersioning>true</breakBuildBasedOnSemanticVersioning>
 							<ignoreMissingOldVersion>true</ignoreMissingOldVersion>
+							<ignoreMissingClasses>true</ignoreMissingClasses>
 							<excludes>
 								<exclude>@org.eclipse.rdf4j.common.annotation.InternalUseOnly</exclude>
 								<exclude>@org.eclipse.rdf4j.common.annotation.Experimental</exclude>
@@ -1007,11 +1005,11 @@
 											<exclude>javax*</exclude>
 										</excludes>
 										<includes>
-											<include>javax.servlet:javax.servlet-api:*:*:provided</include>
-											<include>javax.servlet.jsp:jsp-api:*:*:provided</include>
-											<include>javax.servlet:jstl:*:*:provided</include>
+											<include>jakarta.servlet:jakarta.servlet-api:*:*:provided</include>
+											<include>jakarta.servlet.jsp:jsp-api:*:*:provided</include>
+											<include>jakarta.servlet:jstl:*:*:provided</include>
 											<!-- Allow test server dependencies -->
-											<include>javax.servlet:javax.servlet-api:*:*:test</include>
+											<include>jakarta.servlet:jakarta.servlet-api:*:*:test</include>
 										</includes>
 									</bannedDependencies>
 								</rules>
@@ -1099,4 +1097,16 @@
 		<developerConnection>scm:git:git@github.com:eclipse/rdf4j.git</developerConnection>
 		<url>https://github.com/eclipse/rdf4j</url>
 	</scm>
+	<distributionManagement>
+		<repository>
+			<id>internal</id>
+			<name>OWLIM Releases repository</name>
+			<url>${internal.repo}</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>OWLIM Snapshots repository</name>
+			<url>${snapshots.repo}</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

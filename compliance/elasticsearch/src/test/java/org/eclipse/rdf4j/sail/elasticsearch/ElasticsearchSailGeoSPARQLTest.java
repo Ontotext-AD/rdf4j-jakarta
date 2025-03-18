@@ -18,9 +18,9 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.eclipse.testsuite.rdf4j.sail.lucene.AbstractLuceneSailGeoSPARQLTest;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.reindex.ReindexPlugin;
+import org.elasticsearch.client.internal.node.NodeClient;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.reindex.ReindexPlugin;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.elasticsearch.test.ESIntegTestCase.ClusterScope;
 import org.junit.After;
@@ -37,12 +37,13 @@ public class ElasticsearchSailGeoSPARQLTest extends ESIntegTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		TransportClient client = (TransportClient) internalCluster().transportClient();
+		// TODO: spring
+		NodeClient client = (NodeClient) internalCluster().client();
 		delegateTest = new AbstractLuceneSailGeoSPARQLTest() {
 
 			@Override
 			protected void configure(LuceneSail sail) {
-				sail.setParameter(ElasticsearchIndex.TRANSPORT_KEY, client.transportAddresses().get(0).toString());
+				sail.setParameter(ElasticsearchIndex.TRANSPORT_KEY, client.toString());
 				sail.setParameter(ElasticsearchIndex.ELASTICSEARCH_KEY_PREFIX + "cluster.name",
 						client.settings().get("cluster.name"));
 				sail.setParameter(ElasticsearchIndex.INDEX_NAME_KEY, ElasticsearchTestUtils.getNextTestIndexName());
@@ -52,11 +53,6 @@ public class ElasticsearchSailGeoSPARQLTest extends ESIntegTestCase {
 			}
 		};
 		delegateTest.setUp();
-	}
-
-	@Override
-	protected Collection<Class<? extends Plugin>> transportClientPlugins() {
-		return List.of(ReindexPlugin.class);
 	}
 
 	@Override
