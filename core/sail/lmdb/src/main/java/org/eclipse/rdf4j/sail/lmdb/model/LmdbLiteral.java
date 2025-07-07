@@ -11,6 +11,7 @@
 package org.eclipse.rdf4j.sail.lmdb.model;
 
 import java.io.ObjectStreamException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -40,6 +41,8 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	 */
 	private String language;
 
+	private BaseDirection baseDirection;
+
 	/**
 	 * The literal's datatype.
 	 */
@@ -50,11 +53,11 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	 */
 	private CoreDatatype coreDatatype;
 
-	private ValueStoreRevision revision;
+	private volatile ValueStoreRevision revision;
 
-	private long internalID;
+	private volatile long internalID;
 
-	private boolean initialized = false;
+	private volatile boolean initialized = false;
 
 	/*--------------*
 	 * Constructors *
@@ -67,7 +70,6 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	public LmdbLiteral(ValueStoreRevision revision, String label, long internalID) {
-		assert label != null;
 		this.label = label;
 		coreDatatype = CoreDatatype.XSD.STRING;
 		datatype = CoreDatatype.XSD.STRING.getIri();
@@ -80,11 +82,25 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	public LmdbLiteral(ValueStoreRevision revision, String label, String lang, long internalID) {
-		assert label != null;
+		this(revision, label, lang, BaseDirection.NONE, internalID);
+	}
+
+	public LmdbLiteral(ValueStoreRevision revision, String label, String lang, BaseDirection baseDirection) {
+		this(revision, label, lang, baseDirection, UNKNOWN_ID);
+	}
+
+	public LmdbLiteral(ValueStoreRevision revision, String label, String language, BaseDirection baseDirection,
+			long internalID) {
+		Objects.requireNonNull(language, "null language");
+		Objects.requireNonNull(baseDirection, "null baseDirection");
 		this.label = label;
-		this.language = lang;
-		coreDatatype = CoreDatatype.RDF.LANGSTRING;
-		datatype = CoreDatatype.RDF.LANGSTRING.getIri();
+		this.language = language;
+		this.baseDirection = baseDirection;
+		if (baseDirection != BaseDirection.NONE) {
+			setDatatype(CoreDatatype.RDF.DIRLANGSTRING);
+		} else {
+			setDatatype(CoreDatatype.RDF.LANGSTRING);
+		}
 		setInternalID(internalID, revision);
 		this.initialized = true;
 	}
@@ -102,7 +118,6 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	public LmdbLiteral(ValueStoreRevision revision, String label, IRI datatype, long internalID) {
-		assert label != null;
 		this.label = label;
 		this.datatype = datatype;
 		this.coreDatatype = null;
@@ -112,7 +127,6 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 
 	public LmdbLiteral(ValueStoreRevision revision, String label, IRI datatype, CoreDatatype coreDatatype,
 			long internalID) {
-		assert label != null;
 		this.label = label;
 		assert datatype != null;
 		assert coreDatatype != null;
@@ -124,7 +138,6 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	public LmdbLiteral(ValueStoreRevision revision, String label, CoreDatatype coreDatatype, long internalID) {
-		assert label != null;
 		this.label = label;
 		this.coreDatatype = coreDatatype;
 		this.datatype = coreDatatype.getIri();
@@ -145,19 +158,6 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	@Override
 	public ValueStoreRevision getValueStoreRevision() {
 		return revision;
-	}
-
-	@Override
-	public void setFromInitializedValue(LmdbValue initializedValue) {
-		if (initializedValue instanceof LmdbLiteral) {
-			LmdbLiteral lmdbLiteral = (LmdbLiteral) initializedValue;
-			this.label = lmdbLiteral.label;
-			this.language = lmdbLiteral.language;
-			this.datatype = lmdbLiteral.datatype;
-			this.coreDatatype = lmdbLiteral.coreDatatype;
-		} else {
-			throw new IllegalArgumentException("Initialized value is not of type LmdbLiteral");
-		}
 	}
 
 	@Override
@@ -206,6 +206,11 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 		return Optional.ofNullable(language);
 	}
 
+	@Override
+	public BaseDirection getBaseDirection() {
+		return baseDirection;
+	}
+
 	public void setLanguage(String language) {
 		this.language = language;
 	}
@@ -214,10 +219,9 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 		if (!initialized) {
 			synchronized (this) {
 				if (!initialized) {
-					boolean resolved = revision.resolveValue(internalID, this);
-					initialized = resolved;
-					assert resolved;
+					revision.resolveValue(internalID, this);
 				}
+				initialized = true;
 			}
 		}
 	}
