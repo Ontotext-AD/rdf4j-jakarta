@@ -60,8 +60,8 @@ which artifacts RDF4J provides.
 
 ### RDF4J 4.3
 
-- [RDF4J 4.3.15 SDK (zip)](http://www.eclipse.org/downloads/download.php?file=/rdf4j/eclipse-rdf4j-4.3.15-sdk.zip)
-- [RDF4J 4.3.15 onejar](http://www.eclipse.org/downloads/download.php?file=/rdf4j/eclipse-rdf4j-4.3.15-onejar.jar)
+- [RDF4J 4.3.16 SDK (zip)](http://www.eclipse.org/downloads/download.php?file=/rdf4j/eclipse-rdf4j-4.3.16-sdk.zip)
+- [RDF4J 4.3.16 onejar](http://www.eclipse.org/downloads/download.php?file=/rdf4j/eclipse-rdf4j-4.3.16-onejar.jar)
 
 
 ### RDF4J 4.2
@@ -100,15 +100,15 @@ which artifacts RDF4J provides.
 
 ## Source code and nightly builds
 
-You can access the RDF4J source code directly from [our GitHub repositories](https://github.com/eclipse/rdf4j). Maven nightly snapshot builds for the main and develop branch are available from the [Sonatype snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/org/eclipse/rdf4j/).
+You can access the RDF4J source code directly from [our GitHub repositories](https://github.com/eclipse/rdf4j). Maven nightly snapshot builds for the main and develop branch are available from the [Sonatype snapshot repository](https://central.sonatype.org/content/repositories/snapshots/org/eclipse/rdf4j/).
 
 To include nightly snapshot builds in your project, add this repository to your project’s POM:
 
 ```xml
 <repositories>
     <repository>
-        <id>oss.sonatype.org-snapshot</id>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <id>central.sonatype.org-snapshot</id>
+        <url>https://central.sonatype.org/content/repositories/snapshots</url>
         <releases>
             <enabled>false</enabled>
         </releases>
