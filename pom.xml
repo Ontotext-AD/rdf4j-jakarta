@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.rdf4j</groupId>
 	<artifactId>rdf4j</artifactId>
-	<version>5.2.2-jakarta</version>
+	<version>6.0.0</version>
 	<packaging>pom</packaging>
 	<name>Eclipse RDF4J</name>
 	<description>An extensible Java framework for RDF and SPARQL</description>
@@ -51,6 +51,12 @@
 	<profiles>
 		<profile>
 			<id>ossrh</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>
 			<build>
 				<plugins>
 					<plugin>
@@ -259,32 +265,6 @@
 			</build>
 		</profile>
 		<profile>
-			<id>jacoco</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.8.13</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>report</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>formatting</id>
 			<activation>
 				<!-- active on all Java 11 and higher builds by default -->
@@ -385,22 +365,19 @@
 		<jackson.version>2.13.5</jackson.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<jsonldjava.version>0.13.4</jsonldjava.version>
-		<last.japicmp.compare.version>6.0.0</last.japicmp.compare.version>
+		<last.japicmp.compare.version>5.0.0</last.japicmp.compare.version>
 		<jaxb.version>2.3.8</jaxb.version>
 		<lwjgl.version>3.3.6</lwjgl.version>
-		<lucene.version>9.11.1</lucene.version>
-		<solr.version>9.8.0</solr.version>
-		<elasticsearch.version>8.17.2</elasticsearch.version>
-		<spring.version>6.2.1</spring.version>
+		<lucene.version>8.9.0</lucene.version>
+		<solr.version>8.9.0</solr.version>
+		<elasticsearch.version>7.15.2</elasticsearch.version>
+		<spring.version>5.3.39</spring.version>
 		<guava.version>32.1.3-jre</guava.version>
 		<jmhVersion>1.37</jmhVersion>
-		<servlet.version>6.1.0</servlet.version>
+		<servlet.version>4.0.0</servlet.version>
 		<junit.version>5.9.3</junit.version>
-		<jetty.version>12.1.0.alpha1</jetty.version>
+		<jetty.version>9.4.54.v20240208</jetty.version>
 		<netty.version>4.1.111.Final</netty.version>
-		<!-- Ontotext repos -->
-		<internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
-		<snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -451,11 +428,10 @@
 				<artifactId>commons-cli</artifactId>
 				<version>1.4</version>
 			</dependency>
-			<!-- note this affects the xlsx query result format using apache POI -->
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.18.0</version>
+				<version>2.14.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
@@ -470,7 +446,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.18.0</version>
+				<version>3.12.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -652,7 +628,7 @@
 			<dependency>
 				<groupId>no.hasmac</groupId>
 				<artifactId>hasmac-json-ld</artifactId>
-				<version>0.10.2</version>
+				<version>0.9.0</version>
 			</dependency>
 			<!-- kerby is used by solr-->
 			<dependency>
@@ -773,7 +749,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.3</version>
+					<version>3.11.2</version>
 					<configuration>
 						<encoding>utf8</encoding>
 						<source>11</source>
@@ -835,21 +811,19 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.4</version>
+					<version>3.2.5</version>
 					<configuration>
-						<!-- Prepend JaCoCo agent args when profile 'jacoco' sets @{argLine} -->
-						<argLine>@{argLine} -Xmx2G</argLine>
+						<argLine>-Xmx2048M</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>3.5.4</version>
+					<version>3.2.5</version>
 					<configuration>
 						<forkCount>1</forkCount>
 						<reuseForks>false</reuseForks>
-						<!-- Prepend JaCoCo agent args when profile 'jacoco' sets @{argLine} -->
-						<argLine>@{argLine} -Xmx2G</argLine>
+						<argLine>-Xmx1G</argLine>
 						<includes>
 							<include>**/*IT.java</include>
 						</includes>
@@ -915,7 +889,7 @@
 				<plugin>
 					<groupId>com.github.siom79.japicmp</groupId>
 					<artifactId>japicmp-maven-plugin</artifactId>
-					<version>0.23.1</version>
+					<version>0.18.3</version>
 					<configuration>
 						<oldVersion>
 							<dependency>
@@ -934,12 +908,14 @@
 							<onlyModified>true</onlyModified>
 							<breakBuildBasedOnSemanticVersioning>true</breakBuildBasedOnSemanticVersioning>
 							<ignoreMissingOldVersion>true</ignoreMissingOldVersion>
-							<ignoreMissingClasses>true</ignoreMissingClasses>
 							<excludes>
 								<exclude>@org.eclipse.rdf4j.common.annotation.InternalUseOnly</exclude>
 								<exclude>@org.eclipse.rdf4j.common.annotation.Experimental</exclude>
 								<exclude>org.eclipse.rdf4j.common.annotation.InternalUseOnly</exclude>
 								<exclude>org.eclipse.rdf4j.common.annotation.Experimental</exclude>
+								<exclude>org.eclipse.rdf4j.rio.trigstar.*</exclude>
+								<exclude>org.eclipse.rdf4j.rio.turtlestar.*</exclude>
+								<exclude>org.eclipse.rdf4j.model.util.RDFStarTestHelper.java</exclude>
 							</excludes>
 							<overrideCompatibilityChangeParameters>
 								<!-- The override below was previously activated, left as a comment in case we want to activate it again.
@@ -1031,11 +1007,11 @@
 											<exclude>javax*</exclude>
 										</excludes>
 										<includes>
-											<include>jakarta.servlet:jakarta.servlet-api:*:*:provided</include>
-											<include>jakarta.servlet.jsp:jsp-api:*:*:provided</include>
-											<include>jakarta.servlet:jstl:*:*:provided</include>
+											<include>javax.servlet:javax.servlet-api:*:*:provided</include>
+											<include>javax.servlet.jsp:jsp-api:*:*:provided</include>
+											<include>javax.servlet:jstl:*:*:provided</include>
 											<!-- Allow test server dependencies -->
-											<include>jakarta.servlet:jakarta.servlet-api:*:*:test</include>
+											<include>javax.servlet:javax.servlet-api:*:*:test</include>
 										</includes>
 									</bannedDependencies>
 								</rules>
@@ -1123,16 +1099,4 @@
 		<developerConnection>scm:git:git@github.com:eclipse/rdf4j.git</developerConnection>
 		<url>https://github.com/eclipse/rdf4j</url>
 	</scm>
-	<distributionManagement>
-		<repository>
-			<id>internal</id>
-			<name>OWLIM Releases repository</name>
-			<url>${internal.repo}</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>OWLIM Snapshots repository</name>
-			<url>${snapshots.repo}</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
