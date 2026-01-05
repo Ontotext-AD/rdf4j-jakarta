@@ -29,7 +29,6 @@ import java.util.function.Function;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.CloseableIteratorIteration;
 import org.eclipse.rdf4j.common.iteration.ConvertingIteration;
-import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.FilterIteration;
 import org.eclipse.rdf4j.common.iteration.UnionIteration;
 import org.eclipse.rdf4j.common.order.StatementOrder;
@@ -72,6 +71,7 @@ class LmdbSailStore implements SailStore {
 	private boolean multiThreadingActive;
 	private volatile boolean asyncTransactionFinished;
 	private volatile boolean nextTransactionAsync;
+	private volatile boolean mayHaveInferred;
 
 	boolean enableMultiThreading = true;
 
@@ -83,7 +83,7 @@ class LmdbSailStore implements SailStore {
 	 *
 	 * @param <T> Type of elements within this buffer
 	 */
-	final class CircularBuffer<T> {
+	static final class CircularBuffer<T> {
 
 		private final T[] elements;
 		private volatile int head = 0;
@@ -139,10 +139,12 @@ class LmdbSailStore implements SailStore {
 	class AddQuadOperation implements Operation {
 		long s, p, o, c;
 		boolean explicit;
-		Resource context;
 
 		@Override
 		public void execute() throws IOException {
+			if (!explicit) {
+				mayHaveInferred = true;
+			}
 			if (!unusedIds.isEmpty()) {
 				// these ids are used again
 				unusedIds.remove(s);
@@ -191,8 +193,10 @@ class LmdbSailStore implements SailStore {
 		boolean initialized = false;
 		try {
 			namespaceStore = new NamespaceStore(dataDir);
-			valueStore = new ValueStore(new File(dataDir, "values"), config);
-			tripleStore = new TripleStore(new File(dataDir, "triples"), config);
+			var valueStore = new ValueStore(new File(dataDir, "values"), config);
+			this.valueStore = valueStore;
+			tripleStore = new TripleStore(new File(dataDir, "triples"), config, valueStore);
+			mayHaveInferred = tripleStore.hasTriples(false);
 			initialized = true;
 		} finally {
 			if (!initialized) {
@@ -348,11 +352,15 @@ class LmdbSailStore implements SailStore {
 	 */
 	CloseableIteration<? extends Statement> createStatementIterator(
 			Txn txn, Resource subj, IRI pred, Value obj, boolean explicit, Resource... contexts) throws IOException {
+		if (!explicit && !mayHaveInferred) {
+			// there are no inferred statements and the iterator should only return inferred statements
+			return CloseableIteration.EMPTY_STATEMENT_ITERATION;
+		}
 		long subjID = LmdbValue.UNKNOWN_ID;
 		if (subj != null) {
 			subjID = valueStore.getId(subj);
 			if (subjID == LmdbValue.UNKNOWN_ID) {
-				return new EmptyIteration<>();
+				return CloseableIteration.EMPTY_STATEMENT_ITERATION;
 			}
 		}
 
@@ -360,7 +368,7 @@ class LmdbSailStore implements SailStore {
 		if (pred != null) {
 			predID = valueStore.getId(pred);
 			if (predID == LmdbValue.UNKNOWN_ID) {
-				return new EmptyIteration<>();
+				return CloseableIteration.EMPTY_STATEMENT_ITERATION;
 			}
 		}
 
@@ -369,7 +377,7 @@ class LmdbSailStore implements SailStore {
 			objID = valueStore.getId(obj);
 
 			if (objID == LmdbValue.UNKNOWN_ID) {
-				return new EmptyIteration<>();
+				return CloseableIteration.EMPTY_STATEMENT_ITERATION;
 			}
 		}
 
@@ -591,7 +599,6 @@ class LmdbSailStore implements SailStore {
 					q.p = valueStore.storeValue(pred);
 					q.o = valueStore.storeValue(obj);
 					q.c = context == null ? 0 : valueStore.storeValue(context);
-					q.context = context;
 					q.explicit = explicit;
 
 					if (multiThreadingActive) {
@@ -735,7 +742,6 @@ class LmdbSailStore implements SailStore {
 				q.p = valueStore.storeValue(pred);
 				q.o = valueStore.storeValue(obj);
 				q.c = context == null ? 0 : valueStore.storeValue(context);
-				q.context = context;
 				q.explicit = explicit;
 
 				if (multiThreadingActive) {

@@ -21,9 +21,12 @@ import org.eclipse.rdf4j.common.iteration.FilterIteration;
 import org.eclipse.rdf4j.common.iteration.IndexReportingIterator;
 import org.eclipse.rdf4j.common.order.StatementOrder;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.base.CoreDatatype;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.model.vocabulary.SESAME;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -53,7 +56,8 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 	private final TripleSource tripleSource;
 	private final boolean emptyGraph;
 	private final Function<Value, Resource[]> contextSup;
-	private final BiConsumer<MutableBindingSet, Statement> converter;
+	private BiConsumer<MutableBindingSet, Statement> converter;
+	private BiConsumer<MutableBindingSet, Statement> convertStatementConverter;
 	private final QueryEvaluationContext context;
 	private final StatementOrder order;
 
@@ -64,12 +68,16 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 	private final Function<BindingSet, Value> getPredicateVar;
 	private final Function<BindingSet, Value> getObjectVar;
 
+	private final Var normalizedSubjectVar;
+	private final Var normalizedPredicateVar;
+	private final Var normalizedObjectVar;
+	private final Var normalizedContextVar;
+
 	// We try to do as much work as possible in the constructor.
 	// With the aim of making the evaluate method as cheap as possible.
 	public StatementPatternQueryEvaluationStep(StatementPattern statementPattern, QueryEvaluationContext context,
 			TripleSource tripleSource) {
 		super();
-		this.statementPattern = statementPattern;
 		this.order = statementPattern.getStatementOrder();
 		this.context = context;
 		this.tripleSource = tripleSource;
@@ -99,6 +107,14 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 		Var predVar = statementPattern.getPredicateVar();
 		Var objVar = statementPattern.getObjectVar();
 		Var conVar = statementPattern.getContextVar();
+
+		subjVar = replaceValueWithNewValue(subjVar, tripleSource.getValueFactory());
+		predVar = replaceValueWithNewValue(predVar, tripleSource.getValueFactory());
+		objVar = replaceValueWithNewValue(objVar, tripleSource.getValueFactory());
+		conVar = replaceValueWithNewValue(conVar, tripleSource.getValueFactory());
+
+		this.statementPattern = new StatementPattern(statementPattern.getScope(), subjVar, predVar, objVar, conVar);
+		this.statementPattern.setVariableScopeChange(statementPattern.isVariableScopeChange());
 
 		// First create the getters before removing duplicate vars since we need the getters when creating
 		// JoinStatementWithBindingSetIterator. If there are duplicate vars, for instance ?v1 as both subject and
@@ -137,10 +153,63 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 			}
 		}
 
-		converter = makeConverter(context, subjVar, predVar, objVar, conVar);
+		normalizedSubjectVar = subjVar;
+		normalizedPredicateVar = predVar;
+		normalizedObjectVar = objVar;
+		normalizedContextVar = conVar;
 
-		unboundTest = getUnboundTest(context, subjVar, predVar, objVar, conVar);
+		unboundTest = getUnboundTest(context, normalizedSubjectVar, normalizedPredicateVar, normalizedObjectVar,
+				normalizedContextVar);
 
+	}
+
+	private Var replaceValueWithNewValue(Var var, ValueFactory valueFactory) {
+		if (var == null) {
+			return null;
+		} else if (!var.hasValue()) {
+			return var.clone();
+		} else {
+			Var ret = getVarWithNewValue(var, valueFactory);
+			ret.setVariableScopeChange(var.isVariableScopeChange());
+			return ret;
+		}
+	}
+
+	private static Var getVarWithNewValue(Var var, ValueFactory valueFactory) {
+		boolean constant = var.isConstant();
+		boolean anonymous = var.isAnonymous();
+
+		Value value = var.getValue();
+		if (value.isIRI()) {
+			return Var.of(var.getName(), valueFactory.createIRI(value.stringValue()), anonymous, constant);
+		} else if (value.isBNode()) {
+			return Var.of(var.getName(), valueFactory.createBNode(value.stringValue()), anonymous, constant);
+		} else if (value.isLiteral()) {
+			// preserve label + (language | datatype)
+			Literal lit = (Literal) value;
+
+			// If the literal has a language tag, recreate it with the same language
+			if (lit.getLanguage().isPresent()) {
+				return Var.of(var.getName(), valueFactory.createLiteral(lit.getLabel(), lit.getLanguage().get()),
+						anonymous, constant);
+			}
+
+			CoreDatatype coreDatatype = lit.getCoreDatatype();
+			if (coreDatatype != CoreDatatype.NONE) {
+				// If the literal has a core datatype, recreate it with the same core datatype
+				return Var.of(var.getName(), valueFactory.createLiteral(lit.getLabel(), coreDatatype), anonymous,
+						constant);
+			}
+
+			// Otherwise, preserve the datatype (falls back to xsd:string if none)
+			IRI dt = lit.getDatatype();
+			if (dt != null) {
+				return Var.of(var.getName(), valueFactory.createLiteral(lit.getLabel(), dt), anonymous, constant);
+			} else {
+				return Var.of(var.getName(), valueFactory.createLiteral(lit.getLabel()), anonymous, constant);
+			}
+		}
+		return var;
 	}
 
 	// test if the variable must remain unbound for this solution see
@@ -276,7 +345,7 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 			iteration = handleFilter(contexts, (Resource) subject, (IRI) predicate, object, iteration);
 
 			// Return an iterator that converts the statements to var bindings
-			return new JoinStatementWithBindingSetIterator(iteration, converter, bindings, context);
+			return new JoinStatementWithBindingSetIterator(iteration, getConverter(), bindings, context);
 		} catch (Throwable t) {
 			if (iteration != null) {
 				iteration.close();
@@ -328,7 +397,7 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 			iteration = handleFilter(contexts, (Resource) subject, (IRI) predicate, object, iteration);
 
 			// Return an iterator that converts the statements to var bindings
-			return new ConvertStatementToBindingSetIterator(iteration, converter, context);
+			return new ConvertStatementToBindingSetIterator(iteration, getConvertStatementConverter(), context);
 		} catch (Throwable t) {
 			if (iteration != null) {
 				iteration.close();
@@ -338,6 +407,36 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 			}
 			throw new QueryEvaluationException(t);
 		}
+	}
+
+	private BiConsumer<MutableBindingSet, Statement> getConverter() {
+		BiConsumer<MutableBindingSet, Statement> localConverter = converter;
+		if (localConverter == null) {
+			synchronized (this) {
+				localConverter = converter;
+				if (localConverter == null) {
+					localConverter = makeConverter(context, normalizedSubjectVar, normalizedPredicateVar,
+							normalizedObjectVar, normalizedContextVar);
+					converter = localConverter;
+				}
+			}
+		}
+		return localConverter;
+	}
+
+	private BiConsumer<MutableBindingSet, Statement> getConvertStatementConverter() {
+		BiConsumer<MutableBindingSet, Statement> localConverter = convertStatementConverter;
+		if (localConverter == null) {
+			synchronized (this) {
+				localConverter = convertStatementConverter;
+				if (localConverter == null) {
+					localConverter = makeConvertStatementConverter(context, normalizedSubjectVar,
+							normalizedPredicateVar, normalizedObjectVar, normalizedContextVar);
+					convertStatementConverter = localConverter;
+				}
+			}
+		}
+		return localConverter;
 	}
 
 	private CloseableIteration<? extends Statement> handleFilter(Resource[] contexts,
@@ -526,23 +625,23 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 	private static final class ConvertStatementToBindingSetIterator
 			implements CloseableIteration<BindingSet> {
 
-		private final BiConsumer<MutableBindingSet, Statement> action;
+		private final BiConsumer<MutableBindingSet, Statement> converter;
 		private final QueryEvaluationContext context;
 		private final CloseableIteration<? extends Statement> iteration;
 		private boolean closed = false;
 
 		private ConvertStatementToBindingSetIterator(
 				CloseableIteration<? extends Statement> iteration,
-				BiConsumer<MutableBindingSet, Statement> action, QueryEvaluationContext context) {
+				BiConsumer<MutableBindingSet, Statement> converter, QueryEvaluationContext context) {
 			assert iteration != null;
 			this.iteration = iteration;
-			this.action = action;
+			this.converter = converter;
 			this.context = context;
 		}
 
 		private BindingSet convert(Statement st) {
 			MutableBindingSet made = context.createBindingSet();
-			action.accept(made, st);
+			converter.accept(made, st);
 			return made;
 		}
 
@@ -573,7 +672,7 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 	private static final class JoinStatementWithBindingSetIterator
 			implements CloseableIteration<BindingSet> {
 
-		private final BiConsumer<MutableBindingSet, Statement> action;
+		private final BiConsumer<MutableBindingSet, Statement> converter;
 		private final QueryEvaluationContext context;
 		private final BindingSet bindings;
 		private final CloseableIteration<? extends Statement> iteration;
@@ -581,11 +680,12 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 
 		private JoinStatementWithBindingSetIterator(
 				CloseableIteration<? extends Statement> iteration,
-				BiConsumer<MutableBindingSet, Statement> action, BindingSet bindings, QueryEvaluationContext context) {
+				BiConsumer<MutableBindingSet, Statement> converter, BindingSet bindings,
+				QueryEvaluationContext context) {
 			assert iteration != null;
 			this.iteration = iteration;
 			assert !bindings.isEmpty();
-			this.action = action;
+			this.converter = converter;
 			this.context = context;
 			this.bindings = bindings;
 
@@ -593,7 +693,7 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 
 		private BindingSet convert(Statement st) {
 			MutableBindingSet made = context.createBindingSet(bindings);
-			action.accept(made, st);
+			converter.accept(made, st);
 			return made;
 		}
 
@@ -681,6 +781,60 @@ public class StatementPatternQueryEvaluationStep implements QueryEvaluationStep 
 		return (a, b) -> {
 		};
 
+	}
+
+	private static BiConsumer<MutableBindingSet, Statement> makeConvertStatementConverter(
+			QueryEvaluationContext context,
+			Var s, Var p, Var o, Var c) {
+
+		if (s != null && !s.isConstant()) {
+			if (p != null && !p.isConstant()) {
+				if (o != null && !o.isConstant()) {
+					if (c != null && !c.isConstant()) {
+						return StatementConvertorWithoutBindingChecks.spoc(context, s, p, o, c);
+					} else {
+						return StatementConvertorWithoutBindingChecks.spo(context, s, p, o);
+					}
+				} else if (c != null && !c.isConstant()) {
+					return StatementConvertorWithoutBindingChecks.spc(context, s, p, c);
+				} else {
+					return StatementConvertorWithoutBindingChecks.sp(context, s, p);
+				}
+			} else if (o != null && !o.isConstant()) {
+				if (c != null && !c.isConstant()) {
+					return StatementConvertorWithoutBindingChecks.soc(context, s, o, c);
+				} else {
+					return StatementConvertorWithoutBindingChecks.so(context, s, o);
+				}
+			} else if (c != null && !c.isConstant()) {
+				return StatementConvertorWithoutBindingChecks.sc(context, s, c);
+			} else {
+				return StatementConvertorWithoutBindingChecks.s(context, s);
+			}
+		} else if (p != null && !p.isConstant()) {
+			if (o != null && !o.isConstant()) {
+				if (c != null && !c.isConstant()) {
+					return StatementConvertorWithoutBindingChecks.poc(context, p, o, c);
+				} else {
+					return StatementConvertorWithoutBindingChecks.po(context, p, o);
+				}
+			} else if (c != null && !c.isConstant()) {
+				return StatementConvertorWithoutBindingChecks.pc(context, p, c);
+			} else {
+				return StatementConvertorWithoutBindingChecks.p(context, p);
+			}
+		} else if (o != null && !o.isConstant()) {
+			if (c != null && !c.isConstant()) {
+				return StatementConvertorWithoutBindingChecks.oc(context, o, c);
+			} else {
+				return StatementConvertorWithoutBindingChecks.o(context, o);
+			}
+		} else if (c != null && !c.isConstant()) {
+			return StatementConvertorWithoutBindingChecks.c(context, c);
+		}
+
+		return (a, b) -> {
+		};
 	}
 
 	private static Predicate<Statement> andThen(Predicate<Statement> pred, Predicate<Statement> and) {

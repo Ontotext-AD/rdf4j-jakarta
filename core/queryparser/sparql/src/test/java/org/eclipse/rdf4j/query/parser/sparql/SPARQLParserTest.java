@@ -1002,6 +1002,158 @@ public class SPARQLParserTest {
 		parser.parseUpdate(query, null);
 	}
 
+	@Test
+	public void testInvalidConstructQueryWithPropertyPathInConstructClause() {
+		String invalidSparqlQuery = " CONSTRUCT {\n" +
+				"        ?s (!a)* ?p .\n" +
+				"    }\n" +
+				"    WHERE {\n" +
+				"        ?s (!a)* ?p .\n" +
+				"    }";
+
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+
+	}
+
+	@Test
+	public void testValidConstructQueryWithPropertyPathInWhereClause() {
+		String validSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?person foaf:knows ?friend .\n" +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?person foaf:knows+ ?friend .\n" +
+				"}";
+
+		ParsedQuery parsedQuery = parser.parseQuery(validSparqlQuery, null);
+		assertThat(parsedQuery.getSourceString()).isEqualTo(validSparqlQuery);
+
+	}
+
+	@Test
+	public void testValidConstructQueryWithBlankNodeAsSubject() {
+		String validSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n"
+				+ "PREFIX site: <http://example.org/stats#>\n"
+				+ "\n"
+				+ "CONSTRUCT { [] foaf:name ?name }\n"
+				+ "WHERE\n"
+				+ "{ [] foaf:name ?name ;\n"
+				+ "     site:hits ?hits .\n"
+				+ "}\n"
+				+ "ORDER BY desc(?hits)\n"
+				+ "LIMIT 2";
+
+		ParsedQuery parsedQuery = parser.parseQuery(validSparqlQuery, null);
+		assertThat(parsedQuery.getSourceString()).isEqualTo(validSparqlQuery);
+
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithPropertyPathInPredicatePosition() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?person foaf:knows+ ?friend . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?person foaf:knows+ ?friend .\n" +
+				"}";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithPropertyPathAlternationInPredicate() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?x (foaf:knows|foaf:friendOf) ?y . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?x (foaf:knows|foaf:friendOf) ?y .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithPathSequenceInPredicate() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?a foaf:knows/foaf:knows ?c . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?a foaf:knows/foaf:knows ?c . .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithNegatedPropertySet() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?s !foaf:knows ?o . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?s !foaf:knows ?o  .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithZeroOrMorePathInPredicate() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?s  foaf:knows* ?o . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?s  foaf:knows* ?o  .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithZeroOrMorePathInPredicates() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?s  foaf:knows ?o . " +
+				"  ?s  foaf:name+ ?o . " +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?s  foaf:knows* ?o  .\n" +
+				"  ?s foaf:name ?o .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+	}
+
+	@Test
+	public void testInvalidConstructQueryWithMalformedTriple() {
+		String invalidSparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"CONSTRUCT {\n" +
+				"  ?person foaf:name \n" +
+				"}\n" +
+				"WHERE {\n" +
+				"  ?person foaf:name ?name .\n" +
+				"} ";
+		assertThrows(MalformedQueryException.class, () -> {
+			parser.parseQuery(invalidSparqlQuery, null);
+		});
+	}
+
 	private AggregateFunctionFactory buildDummyFactory() {
 		return new AggregateFunctionFactory() {
 			@Override

@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  setup:
+  copilot-setup-steps:
     name: Prepare Maven workspace and prime E2E dependencies
     runs-on: ubuntu-latest
     steps:
@@ -22,17 +22,28 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Prepare custom Maven repository directory
+        run: mkdir -p .m2_repo
+
+      - name: Cache custom Maven repository
+        uses: actions/cache@v4
+        with:
+          path: .m2_repo
+          key: ${{ runner.os }}-m2-repo-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-repo-
+
       - name: Validate formatting configuration
-        run: mvn -B -T 2C formatter:validate impsort:check xml-format:xml-check
+        run: mvn -B -T 2C -Dmaven.repo.local=.m2_repo formatter:validate impsort:check xml-format:xml-check
 
       - name: Quick compile (skip tests)
-        run: mvn -B -T 2C compile -DskipTests -Pquick
+        run: mvn -B -T 2C -Dmaven.repo.local=.m2_repo compile -DskipTests -Pquick
 
       - name: Download Maven dependencies for offline use
-        run: mvn -B -T 2C dependency:go-offline
+        run: mvn -B -T 2C -Dmaven.repo.local=.m2_repo dependency:go-offline
 
       - name: Maven install (skip tests)
-        run: mvn -B install -DskipTests -Pquick
+        run: mvn -B -Dmaven.repo.local=.m2_repo install -DskipTests -Pquick
 
       - name: Install system dependencies for E2E tests
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils

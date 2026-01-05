@@ -603,9 +603,29 @@ public class DefaultEvaluationStrategy implements EvaluationStrategy, FederatedS
 	protected QueryEvaluationStep prepare(Extension node, QueryEvaluationContext context)
 			throws QueryEvaluationException {
 		QueryEvaluationStep arg = precompile(node.getArg(), context);
+		boolean setNullOnError = !isWithinMinusRightArg(node);
 		Consumer<MutableBindingSet> consumer = ExtensionIterator.buildLambdaToEvaluateTheExpressions(node, this,
-				context);
+				context, setNullOnError);
 		return new ExtensionQueryEvaluationStep(arg, consumer, context);
+	}
+
+	private static boolean isWithinMinusRightArg(QueryModelNode node) {
+		QueryModelNode child = node;
+		QueryModelNode parent = node.getParentNode();
+		while (parent != null) {
+			if (parent instanceof Difference) {
+				Difference diff = (Difference) parent;
+				if (diff.getRightArg() == child) {
+					return true;
+				}
+				if (diff.getLeftArg() == child) {
+					return false;
+				}
+			}
+			child = parent;
+			parent = parent.getParentNode();
+		}
+		return false;
 	}
 
 	protected QueryEvaluationStep prepare(Service service, QueryEvaluationContext context)
@@ -1232,8 +1252,32 @@ public class DefaultEvaluationStrategy implements EvaluationStrategy, FederatedS
 
 	protected QueryValueEvaluationStep prepare(Compare node, QueryEvaluationContext context) {
 		boolean strict = QueryEvaluationMode.STRICT == getQueryEvaluationMode();
-		return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
-				.valueOf(QueryEvaluationUtil.compare(leftVal, rightVal, node.getOperator(), strict)), context);
+
+		Compare.CompareOp operator = node.getOperator();
+		switch (operator) {
+		case EQ:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareEQ(leftVal, rightVal, strict)), context);
+		case NE:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareNE(leftVal, rightVal, strict)), context);
+		case LT:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareLT(leftVal, rightVal, strict)), context);
+		case LE:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareLE(leftVal, rightVal, strict)), context);
+		case GE:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareGE(leftVal, rightVal, strict)), context);
+		case GT:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compareGT(leftVal, rightVal, strict)), context);
+		default:
+			return supplyBinaryValueEvaluation(node, (leftVal, rightVal) -> BooleanLiteral
+					.valueOf(QueryEvaluationUtil.compare(leftVal, rightVal, node.getOperator(), strict)), context);
+		}
+
 	}
 
 	private BiFunction<Value, Value, Value> mathOperationApplier(MathExpr node,
@@ -1321,7 +1365,18 @@ public class DefaultEvaluationStrategy implements EvaluationStrategy, FederatedS
 
 	protected QueryValueEvaluationStep prepare(Exists node, QueryEvaluationContext context)
 			throws QueryEvaluationException {
-		QueryEvaluationStep subquery = precompile(node.getSubQuery(), context);
+		// Optimization/semantic shortcut: EXISTS { OPTIONAL { ... } } is always true.
+		// In algebra, OPTIONAL is a LeftJoin. With a SingletonSet left-arg, LeftJoin
+		// always yields at least the input binding set. Therefore EXISTS evaluates to TRUE.
+		TupleExpr subQuery = node.getSubQuery();
+		if (subQuery instanceof LeftJoin) {
+			LeftJoin leftJoin = (LeftJoin) subQuery;
+			if (leftJoin.getLeftArg() instanceof SingletonSet) {
+				return bindings -> BooleanLiteral.TRUE;
+			}
+		}
+
+		QueryEvaluationStep subquery = precompile(subQuery, context);
 		return new ExistsQueryValueEvaluationStep(subquery);
 	}
 
