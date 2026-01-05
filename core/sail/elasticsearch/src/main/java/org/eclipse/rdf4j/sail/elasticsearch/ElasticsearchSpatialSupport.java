@@ -12,7 +12,7 @@ package org.eclipse.rdf4j.sail.elasticsearch;
 
 import java.util.Map;
 
-import org.elasticsearch.common.geo.builders.ShapeBuilder;
+import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.locationtech.spatial4j.shape.Shape;
 
 /**
@@ -40,14 +40,14 @@ abstract class ElasticsearchSpatialSupport {
 		return support;
 	}
 
-	protected abstract ShapeBuilder toShapeBuilder(Shape s);
+	protected abstract GeoShapeQueryBuilder toShapeBuilder(Shape s);
 
 	protected abstract Map<String, Object> toGeoJSON(Shape s);
 
 	private static final class DefaultElasticsearchSpatialSupport extends ElasticsearchSpatialSupport {
 
 		@Override
-		protected ShapeBuilder toShapeBuilder(Shape s) {
+		protected GeoShapeQueryBuilder toShapeBuilder(Shape s) {
 			throw new UnsupportedOperationException(
 					"This shape is not supported due to licensing issues. Feel free to provide your own implementation by using something like JTS: "
 							+ s.getClass().getName());

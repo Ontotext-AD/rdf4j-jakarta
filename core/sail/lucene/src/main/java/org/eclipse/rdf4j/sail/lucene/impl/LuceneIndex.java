@@ -79,9 +79,9 @@ import org.apache.lucene.spatial.prefix.RecursivePrefixTreeStrategy;
 import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
 import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTreeFactory;
 import org.apache.lucene.spatial.query.SpatialOperation;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
 import org.eclipse.rdf4j.common.iterator.EmptyIterator;
 import org.eclipse.rdf4j.model.IRI;
@@ -221,7 +221,7 @@ public class LuceneIndex extends AbstractLuceneIndex {
 			dir = FSDirectory.open(Paths.get(parameters.getProperty(LuceneSail.LUCENE_DIR_KEY)));
 		} else if (parameters.containsKey(LuceneSail.LUCENE_RAMDIR_KEY)
 				&& "true".equals(parameters.getProperty(LuceneSail.LUCENE_RAMDIR_KEY))) {
-			dir = new RAMDirectory();
+			dir = new ByteBuffersDirectory();
 		} else {
 			throw new IOException("No luceneIndex set, and no '" + LuceneSail.LUCENE_DIR_KEY + "' or '"
 					+ LuceneSail.LUCENE_RAMDIR_KEY + "' parameter given. ");
@@ -1148,22 +1148,22 @@ public class LuceneIndex extends AbstractLuceneIndex {
 			return (fieldsToLoad == null || fieldsToLoad.contains(fieldInfo.name)) ? Status.YES : Status.NO;
 		}
 
-		@Override
-		public void stringField(FieldInfo fieldInfo, byte[] value) {
-			final String stringValue = new String(value, StandardCharsets.UTF_8);
-			String name = fieldInfo.name;
-			if (SearchFields.ID_FIELD_NAME.equals(name)) {
-				addIDField(stringValue, document);
-			} else if (SearchFields.CONTEXT_FIELD_NAME.equals(name)) {
-				addContextField(stringValue, document);
-			} else if (SearchFields.URI_FIELD_NAME.equals(name)) {
-				addResourceField(stringValue, document);
-			} else if (SearchFields.TEXT_FIELD_NAME.equals(name)) {
-				addTextField(stringValue, document);
-			} else {
-				addPredicateField(name, stringValue, document);
-			}
-		}
+//		@Override
+//		public void stringField(FieldInfo fieldInfo, byte[] value) {
+//			final String stringValue = new String(value, StandardCharsets.UTF_8);
+//			String name = fieldInfo.name;
+//			if (SearchFields.ID_FIELD_NAME.equals(name)) {
+//				addIDField(stringValue, document);
+//			} else if (SearchFields.CONTEXT_FIELD_NAME.equals(name)) {
+//				addContextField(stringValue, document);
+//			} else if (SearchFields.URI_FIELD_NAME.equals(name)) {
+//				addResourceField(stringValue, document);
+//			} else if (SearchFields.TEXT_FIELD_NAME.equals(name)) {
+//				addTextField(stringValue, document);
+//			} else {
+//				addPredicateField(name, stringValue, document);
+//			}
+//		}
 
 		Document getDocument() {
 			return document;

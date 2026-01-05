@@ -36,7 +36,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TotalHitCountCollector;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.eclipse.rdf4j.common.concurrent.locks.Properties;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -113,7 +113,7 @@ public class LuceneIndexTest {
 	Statement statementContext232 = vf.createStatement(subject2, predicate2, object5, CONTEXT_2);
 
 	// add a statement to an index
-	RAMDirectory directory;
+	ByteBuffersDirectory directory;
 
 	StandardAnalyzer analyzer;
 
@@ -121,7 +121,7 @@ public class LuceneIndexTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		directory = new RAMDirectory();
+		directory = new ByteBuffersDirectory();
 		analyzer = new StandardAnalyzer();
 		index = new LuceneIndex(directory, analyzer);
 	}

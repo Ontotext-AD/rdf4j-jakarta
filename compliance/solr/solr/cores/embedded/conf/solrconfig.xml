@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<luceneMatchVersion>8.9.0</luceneMatchVersion>
+	<luceneMatchVersion>9.11.1</luceneMatchVersion>
 	<dataDir>target/test-data</dataDir>
 	<requestHandler name="/select" class="solr.SearchHandler"/>
 	<requestHandler name="/get" class="solr.RealTimeGetHandler"/>
