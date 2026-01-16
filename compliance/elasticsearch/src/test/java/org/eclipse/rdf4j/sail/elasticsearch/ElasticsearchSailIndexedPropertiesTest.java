@@ -21,7 +21,6 @@ import org.eclipse.testsuite.rdf4j.sail.lucene.AbstractLuceneSailIndexedProperti
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.internal.node.NodeClient;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.reindex.ReindexPlugin;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.elasticsearch.test.ESIntegTestCase.ClusterScope;
 import org.junit.After;
@@ -57,7 +56,7 @@ public class ElasticsearchSailIndexedPropertiesTest extends ESIntegTestCase {
 
 	@Override
 	protected Collection<Class<? extends Plugin>> nodePlugins() {
-		return List.of(ReindexPlugin.class);
+		return List.of();
 	}
 
 	@After

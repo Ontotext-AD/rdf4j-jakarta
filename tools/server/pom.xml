@@ -86,9 +86,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty.ee10</groupId>
-			<artifactId>jetty-ee10-webapp</artifactId>
-			<version>12.1.0.alpha1</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>11.0.24</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
