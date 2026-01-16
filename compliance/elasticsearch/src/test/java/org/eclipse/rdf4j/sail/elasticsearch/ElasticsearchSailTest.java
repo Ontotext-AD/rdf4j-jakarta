@@ -18,8 +18,9 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.eclipse.testsuite.rdf4j.sail.lucene.AbstractLuceneSailTest;
-import org.elasticsearch.client.node.NodeClient;
+import org.elasticsearch.client.internal.node.NodeClient;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.reindex.ReindexPlugin;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.elasticsearch.test.ESIntegTestCase.ClusterScope;
 import org.junit.After;
@@ -55,7 +56,7 @@ public class ElasticsearchSailTest extends ESIntegTestCase {
 
 	@Override
 	protected Collection<Class<? extends Plugin>> nodePlugins() {
-		return List.of();
+		return List.of(ReindexPlugin.class);
 	}
 
 	@After
