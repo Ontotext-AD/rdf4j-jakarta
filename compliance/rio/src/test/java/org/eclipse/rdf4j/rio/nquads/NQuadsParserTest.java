@@ -20,7 +20,7 @@ public class NQuadsParserTest {
 	public static Test suite() throws Exception {
 		final TestSuite suite = new TestSuite();
 		suite.addTest(NQuads11ParserTest.suite());
-//		suite.addTest(NQuads12ParserTest.suite());
+		suite.addTest(NQuads12ParserTest.suite());
 		return suite;
 	}
 

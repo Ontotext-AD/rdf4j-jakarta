@@ -161,6 +161,11 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	@Override
+	public void setFromInitializedValue(LmdbValue initializedValue) {
+
+	}
+
+	@Override
 	public long getInternalID() {
 		return internalID;
 	}

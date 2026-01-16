@@ -341,7 +341,7 @@ public abstract class RDFStoreTest {
 		testValueRoundTrip(subj, pred, obj);
 	}
 
-	private void testValueRoundTrip(Resource subj, IRI pred, Value obj) {
+	protected void testValueRoundTrip(Resource subj, IRI pred, Value obj) {
 		con.begin();
 		con.addStatement(subj, pred, obj);
 		con.commit();
@@ -495,7 +495,8 @@ public abstract class RDFStoreTest {
 
 		con.begin();
 		assertThatExceptionOfType(SailException.class)
-				.isThrownBy(() -> con.addStatement(picasso, paints, guernica, tripleContext))
+				.isThrownBy(
+						() -> con.addStatement((Resource) picasso, paints, (Value) guernica, (Resource) tripleContext))
 				.withMessageStartingWith("context argument can not be of type Triple: ");
 		con.commit();
 
@@ -503,7 +504,8 @@ public abstract class RDFStoreTest {
 		con.addStatement(picasso, paints, guernica, context1);
 		con.commit();
 
-		assertThat(con.hasStatement(picasso, paints, guernica, true, tripleContext)).isFalse();
+		assertThat(con.hasStatement((Resource) picasso, paints, (Value) guernica, true, (Resource) tripleContext))
+				.isFalse();
 		assertThat(con.hasStatement(painter, RDF.TYPE, RDFS.CLASS, true)).isTrue();
 		assertThat(con.hasStatement(picasso, paints, guernica, true, context1)).isTrue();
 	}

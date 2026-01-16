@@ -12,9 +12,9 @@ package org.eclipse.rdf4j.federated.server;
 
 import java.io.File;
 
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class EmbeddedServer {
 

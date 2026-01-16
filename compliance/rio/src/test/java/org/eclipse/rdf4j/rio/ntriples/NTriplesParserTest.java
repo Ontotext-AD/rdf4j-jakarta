@@ -20,7 +20,7 @@ public class NTriplesParserTest {
 	public static Test suite() throws Exception {
 		final TestSuite suite = new TestSuite();
 		suite.addTest(NTriples11ParserTest.suite());
-//		suite.addTest(NTriples12ParserTest.suite());
+		suite.addTest(NTriples12ParserTest.suite());
 		return suite;
 	}
 
