@@ -41,6 +41,9 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.lang.FileFormat;
 import org.eclipse.rdf4j.common.lang.service.FileFormatServiceRegistry;
@@ -90,9 +93,6 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Handles requests for transaction creation on a repository.

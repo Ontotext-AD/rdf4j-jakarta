@@ -18,6 +18,9 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.http.server.ClientHTTPException;
 import org.eclipse.rdf4j.http.server.ServerHTTPException;
 import org.eclipse.rdf4j.http.server.repository.RepositoryInterceptor;
@@ -35,9 +38,6 @@ import org.eclipse.rdf4j.rio.RDFWriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.View;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Streams statements as RDF in the format requested by the client.

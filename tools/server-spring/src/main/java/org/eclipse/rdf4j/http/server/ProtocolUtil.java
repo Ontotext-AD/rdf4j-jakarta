@@ -18,6 +18,9 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.common.lang.FileFormat;
 import org.eclipse.rdf4j.common.lang.service.FileFormatServiceRegistry;
 import org.eclipse.rdf4j.common.webapp.util.HttpServerUtil;
@@ -30,9 +33,6 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Utilities to help with the transition between HTTP requests/responses and values expected by the protocol.

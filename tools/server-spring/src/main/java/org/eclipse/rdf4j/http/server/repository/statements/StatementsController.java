@@ -32,6 +32,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.webapp.util.HttpServerUtil;
 import org.eclipse.rdf4j.common.webapp.views.EmptySuccessView;
@@ -72,9 +75,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Handles requests for manipulating the statements in a repository.

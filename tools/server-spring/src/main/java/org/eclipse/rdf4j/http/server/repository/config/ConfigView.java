@@ -16,6 +16,9 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.http.server.ServerHTTPException;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -23,9 +26,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.springframework.web.servlet.View;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * View used to export a repository config. Renders the statements as RDF using a serialization specified using a

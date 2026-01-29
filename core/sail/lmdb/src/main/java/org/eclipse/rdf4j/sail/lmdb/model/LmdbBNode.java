@@ -31,7 +31,7 @@ public class LmdbBNode extends SimpleBNode implements LmdbResource {
 
 	private long internalID;
 
-	private boolean initialized = false;
+	private volatile boolean initialized = false;
 
 	/*--------------*
 	 * Constructors *
@@ -72,6 +72,7 @@ public class LmdbBNode extends SimpleBNode implements LmdbResource {
 		if (initializedValue instanceof LmdbBNode) {
 			LmdbBNode lmdbBNode = (LmdbBNode) initializedValue;
 			super.setID(lmdbBNode.getID());
+			this.initialized = true; // <- fix here
 		} else {
 			throw new IllegalArgumentException("Initialized value is not of type LmdbBNode");
 		}

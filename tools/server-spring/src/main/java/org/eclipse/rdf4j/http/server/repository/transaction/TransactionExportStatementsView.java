@@ -17,6 +17,9 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.http.server.ServerHTTPException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
@@ -26,9 +29,6 @@ import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.RDFWriterFactory;
 import org.springframework.web.servlet.View;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * View used to export statements as part of a transaction. Renders the statements as RDF using a serialization

@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpStatus;
 import org.eclipse.rdf4j.common.webapp.views.EmptySuccessView;
 import org.eclipse.rdf4j.http.server.ClientHTTPException;
@@ -36,9 +39,6 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Handles requests related to repository configuration.

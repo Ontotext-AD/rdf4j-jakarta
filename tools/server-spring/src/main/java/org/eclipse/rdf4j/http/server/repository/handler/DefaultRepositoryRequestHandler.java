@@ -15,6 +15,8 @@ import static org.eclipse.rdf4j.http.protocol.Protocol.QUERY_PARAM_NAME;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.http.HttpStatus;
 import org.eclipse.rdf4j.common.exception.RDF4JException;
 import org.eclipse.rdf4j.common.webapp.views.EmptySuccessView;
@@ -31,8 +33,6 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public class DefaultRepositoryRequestHandler implements RepositoryRequestHandler {
 

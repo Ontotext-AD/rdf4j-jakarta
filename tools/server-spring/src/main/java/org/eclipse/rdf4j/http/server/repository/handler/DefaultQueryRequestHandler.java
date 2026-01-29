@@ -11,9 +11,8 @@
 
 package org.eclipse.rdf4j.http.server.repository.handler;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static jakarta.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static jakarta.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE;
+import static javax.servlet.http.HttpServletResponse.*;
+
 import static org.eclipse.rdf4j.http.protocol.Protocol.BINDING_PREFIX;
 import static org.eclipse.rdf4j.http.protocol.Protocol.DEFAULT_GRAPH_PARAM_NAME;
 import static org.eclipse.rdf4j.http.protocol.Protocol.INCLUDE_INFERRED_PARAM_NAME;
@@ -25,6 +24,9 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -65,9 +67,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 public class DefaultQueryRequestHandler extends AbstractQueryRequestHandler {
 

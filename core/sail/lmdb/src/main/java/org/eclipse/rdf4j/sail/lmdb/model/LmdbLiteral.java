@@ -161,6 +161,17 @@ public class LmdbLiteral extends AbstractLiteral implements LmdbValue {
 	}
 
 	@Override
+	public void setFromInitializedValue(LmdbValue initializedValue) {
+		LmdbLiteral other = (LmdbLiteral) initializedValue;
+		this.label = other.label;
+		this.language = other.language;
+		this.datatype = other.datatype;
+		this.coreDatatype = other.coreDatatype;
+		this.baseDirection = other.baseDirection;
+		this.initialized = true;
+	}
+
+	@Override
 	public long getInternalID() {
 		return internalID;
 	}

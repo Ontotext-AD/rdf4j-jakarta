@@ -93,6 +93,7 @@ public class LmdbIRI implements LmdbResource, IRI {
 			LmdbIRI initializedIRI = (LmdbIRI) initializedValue;
 			this.iriString = initializedIRI.iriString;
 			this.localNameIdx = initializedIRI.localNameIdx;
+			this.initialized = true;
 		} else {
 			throw new SailException("Trying to initialize LmdbIRI from non-IRI value");
 		}

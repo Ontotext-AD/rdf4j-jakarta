@@ -143,7 +143,9 @@ public final class SearchFields {
 		return !ID_FIELD_NAME.equals(fieldName) && !URI_FIELD_NAME.equals(fieldName)
 				&& !TEXT_FIELD_NAME.equals(fieldName) && !CONTEXT_FIELD_NAME.equals(fieldName)
 				// geo/internal fields
+				&& !fieldName.isEmpty()
 				&& fieldName.charAt(0) != '_';
+
 	}
 
 	public static String formIdString(String resourceId, String contextId) {

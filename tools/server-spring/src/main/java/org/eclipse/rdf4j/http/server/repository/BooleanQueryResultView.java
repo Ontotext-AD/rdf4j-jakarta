@@ -16,13 +16,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.query.QueryResultHandlerException;
 import org.eclipse.rdf4j.query.resultio.BooleanQueryResultFormat;
 import org.eclipse.rdf4j.query.resultio.BooleanQueryResultWriter;
 import org.eclipse.rdf4j.query.resultio.BooleanQueryResultWriterFactory;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * View used to render boolean query results. Renders results in a format specified using a parameter or Accept header.

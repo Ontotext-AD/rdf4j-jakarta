@@ -19,6 +19,9 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.query.QueryResults;
@@ -30,9 +33,6 @@ import org.eclipse.rdf4j.query.resultio.TupleQueryResultWriter;
 import org.eclipse.rdf4j.query.resultio.TupleQueryResultWriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * View used to render tuple query results. Renders results in a format specified using a parameter or Accept header.

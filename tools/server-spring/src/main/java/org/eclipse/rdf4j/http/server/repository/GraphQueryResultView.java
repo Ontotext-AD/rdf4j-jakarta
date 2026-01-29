@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
@@ -28,9 +31,6 @@ import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.RDFWriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * View used to render graph query results. Renders the graph as RDF using a serialization specified using a parameter
