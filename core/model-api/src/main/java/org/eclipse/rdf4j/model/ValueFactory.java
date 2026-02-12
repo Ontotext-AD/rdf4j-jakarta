@@ -297,7 +297,7 @@ public interface ValueFactory {
 	 *           {@link UnsupportedOperationException}. Concrete implementations are expected to override.
 	 * @since 3.2.0
 	 */
-	default Triple createTriple(Resource subject, IRI predicate, Value object) {
+	default TripleTerm createTripleTerm(Resource subject, IRI predicate, Value object) {
 		throw new UnsupportedOperationException();
 	}
 

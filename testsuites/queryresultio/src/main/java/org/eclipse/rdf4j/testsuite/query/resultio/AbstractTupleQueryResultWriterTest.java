@@ -18,8 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -56,7 +55,7 @@ public abstract class AbstractTupleQueryResultWriterTest {
 
 		writer.getWriterConfig().set(BasicWriterSettings.ENCODE_TRIPLE_TERMS, true);
 
-		Triple t = vf.createTriple(RDF.ALT, RDF.TYPE, RDFS.CLASS);
+		TripleTerm t = vf.createTripleTerm(RDF.ALT, RDF.TYPE, RDFS.CLASS);
 		MapBindingSet bs = new MapBindingSet();
 		bs.addBinding("t", t);
 
@@ -75,7 +74,7 @@ public abstract class AbstractTupleQueryResultWriterTest {
 		if (writer.getTupleQueryResultFormat().supportsRDFStar()) {
 			// natively-supporting RDF-star writers should ignore the encoding setting and just always use their
 			// extended format
-			assertThat(actual.getValue("t")).isInstanceOf(Triple.class);
+			assertThat(actual.getValue("t")).isInstanceOf(TripleTerm.class);
 		} else {
 			assertThat(actual.getValue("t")).isInstanceOf(IRI.class);
 			assertThat(actual.getValue("t")).isEqualTo(TripleTermUtil.toRDFEncodedValue(t));
@@ -91,7 +90,7 @@ public abstract class AbstractTupleQueryResultWriterTest {
 
 		writer.getWriterConfig().set(BasicWriterSettings.ENCODE_TRIPLE_TERMS, false);
 
-		Triple t = vf.createTriple(RDF.ALT, RDF.TYPE, RDFS.CLASS);
+		TripleTerm t = vf.createTripleTerm(RDF.ALT, RDF.TYPE, RDFS.CLASS);
 		MapBindingSet bs = new MapBindingSet();
 		bs.addBinding("t", t);
 
@@ -107,7 +106,7 @@ public abstract class AbstractTupleQueryResultWriterTest {
 		parser.parseQueryResult(new ByteArrayInputStream(baos.toByteArray()));
 
 		BindingSet actual = collector.getBindingSets().get(0);
-		assertThat(actual.getValue("t")).isInstanceOf(Triple.class);
+		assertThat(actual.getValue("t")).isInstanceOf(TripleTerm.class);
 	}
 
 	@Test
@@ -119,8 +118,8 @@ public abstract class AbstractTupleQueryResultWriterTest {
 
 		writer.getWriterConfig().set(BasicWriterSettings.ENCODE_TRIPLE_TERMS, false);
 
-		Triple t2 = vf.createTriple(RDF.ALT, RDF.TYPE, RDFS.CLASS);
-		Triple t = vf.createTriple(RDF.BAG, RDFS.COMMENT, t2);
+		TripleTerm t2 = vf.createTripleTerm(RDF.ALT, RDF.TYPE, RDFS.CLASS);
+		TripleTerm t = vf.createTripleTerm(RDF.BAG, RDFS.COMMENT, t2);
 		MapBindingSet bs = new MapBindingSet();
 		bs.addBinding("t", t);
 
@@ -136,14 +135,14 @@ public abstract class AbstractTupleQueryResultWriterTest {
 		parser.parseQueryResult(new ByteArrayInputStream(baos.toByteArray()));
 
 		BindingSet actual = collector.getBindingSets().get(0);
-		assertThat(actual.getValue("t")).isInstanceOf(Triple.class);
+		assertThat(actual.getValue("t")).isInstanceOf(TripleTerm.class);
 
-		Triple actualT = (Triple) actual.getValue("t");
+		TripleTerm actualT = (TripleTerm) actual.getValue("t");
 		assertThat(actualT.getSubject()).isEqualTo(RDF.BAG);
 		assertThat(actualT.getPredicate()).isEqualTo(RDFS.COMMENT);
-		assertThat(actualT.getObject()).isInstanceOf(Triple.class);
+		assertThat(actualT.getObject()).isInstanceOf(TripleTerm.class);
 
-		Triple actualT2 = (Triple) actualT.getObject();
+		TripleTerm actualT2 = (TripleTerm) actualT.getObject();
 		assertThat(actualT2.getSubject()).isEqualTo(RDF.ALT);
 		assertThat(actualT2.getPredicate()).isEqualTo(RDF.TYPE);
 		assertThat(actualT2.getObject()).isEqualTo(RDFS.CLASS);

@@ -19,8 +19,7 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -60,28 +59,29 @@ public class NTriplesUtilTest {
 	@Test
 	public void testSerializeTriple() throws IOException {
 		Object[] triples = new Object[] {
-				f.createTriple(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c")),
+				f.createTripleTerm(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c")),
 				"<<( <urn:a> <urn:b> <urn:c> )>>",
 
-				f.createTriple(f.createIRI("urn:subject"),
-						DC.SOURCE, f.createTriple(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c"))),
+				f.createTripleTerm(f.createIRI("urn:subject"),
+						DC.SOURCE,
+						f.createTripleTerm(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c"))),
 				"<<( <urn:subject> <http://purl.org/dc/elements/1.1/source> <<( <urn:a> <urn:b> <urn:c> )>> )>>",
 
-				f.createTriple(f.createBNode("bnode1"), f.createIRI("urn:x"),
-						f.createTriple(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c"))),
+				f.createTripleTerm(f.createBNode("bnode1"), f.createIRI("urn:x"),
+						f.createTripleTerm(f.createIRI("urn:a"), f.createIRI("urn:b"), f.createIRI("urn:c"))),
 				"<<( _:bnode1 <urn:x> <<( <urn:a> <urn:b> <urn:c> )>> )>>"
 		};
 
 		for (int i = 0; i < triples.length; i += 2) {
-			assertEquals(triples[i + 1], NTriplesUtil.toNTriplesString((Triple) triples[i]));
+			assertEquals(triples[i + 1], NTriplesUtil.toNTriplesString((TripleTerm) triples[i]));
 			assertEquals(triples[i + 1], NTriplesUtil.toNTriplesString((Value) triples[i]));
-			NTriplesUtil.append((Triple) triples[i], appendable);
+			NTriplesUtil.append((TripleTerm) triples[i], appendable);
 			assertEquals(triples[i + 1], appendable.toString());
 			appendable = new StringBuilder();
-			NTriplesUtil.append((Triple) triples[i], appendable);
+			NTriplesUtil.append((TripleTerm) triples[i], appendable);
 			assertEquals(triples[i + 1], appendable.toString());
 			appendable = new StringBuilder();
-			NTriplesUtil.append((Triple) triples[i], appendable);
+			NTriplesUtil.append((TripleTerm) triples[i], appendable);
 			assertEquals(triples[i + 1], appendable.toString());
 			appendable = new StringBuilder();
 		}
@@ -98,10 +98,10 @@ public class NTriplesUtilTest {
 				// test surrogate pair range in bnode
 				"<<( _:test_\uD800\uDC00_\uD840\uDC00_bnode <urn:x> <urn:y> )>>",
 				"<<( _:test_\uD800\uDC00_\uD840\uDC00_bnode urn:x urn:y )>>",
-				// invalid: missing closing >> for inner triple
+				// invalid: missing closing >> for inner tripleTerm
 				"<<(<<(_:bnode1foobar<urn:täst>\"literál за проба\"^^<urn:test\\u0444\\U00000444><http://test/baz>\"test\\\\\\\"lit\">>",
 				null,
-				// invalid: missing closing >> for outer triple
+				// invalid: missing closing >> for outer tripleTerm
 				"<<(<<(_:bnode1foobar<urn:täst>\"literál за проба\"^^<urn:test\\u0444\\U00000444>)>><http://test/baz>\"test\\\\\\\"lit\"",
 				null,
 				// invalid: literal subject
@@ -110,7 +110,7 @@ public class NTriplesUtilTest {
 				// invalid: bnode predicate
 				"<<(<urn:test> _:test \"test\")>>",
 				null,
-				// invalid: triple predicate
+				// invalid: tripleTerm predicate
 				"<<(<urn:a> <<(<urn:1> <urn:2> <urn:3>)>> <urn:b>)>>",
 				null,
 				// tests with empty literal,
@@ -124,17 +124,17 @@ public class NTriplesUtilTest {
 
 		for (int i = 0; i < triples.length; i += 2) {
 			parseTriple(triples[i], triples[i + 1], (t) -> NTriplesUtil.parseTriple(t, f));
-			parseTriple(triples[i], triples[i + 1], (t) -> (Triple) NTriplesUtil.parseValue(t, f));
+			parseTriple(triples[i], triples[i + 1], (t) -> (TripleTerm) NTriplesUtil.parseValue(t, f));
 		}
 	}
 
-	private void parseTriple(String triple, String expected, Function<String, Triple> parser) {
+	private void parseTriple(String triple, String expected, Function<String, TripleTerm> parser) {
 		try {
-			Triple t = parser.apply(triple);
+			TripleTerm t = parser.apply(triple);
 			assertEquals(expected, t.stringValue());
 		} catch (IllegalArgumentException e) {
 			if (expected != null) {
-				fail("Unexpected exception for valid triple: " + triple);
+				fail("Unexpected exception for valid tripleTerm: " + triple);
 			}
 		}
 	}

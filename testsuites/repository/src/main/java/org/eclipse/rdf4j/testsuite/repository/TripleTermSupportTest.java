@@ -20,7 +20,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.FOAF;
@@ -100,17 +100,17 @@ public abstract class TripleTermSupportTest {
 
 	@Test
 	public void testAddRDFStarObject() {
-		Triple triple = vf.createTriple(bob, FOAF.NAME, nameBob);
+		TripleTerm tripleTerm = vf.createTripleTerm(bob, FOAF.NAME, nameBob);
 
-		testCon.add(RDF.ALT, RDF.TYPE, triple);
+		testCon.add(RDF.ALT, RDF.TYPE, tripleTerm);
 
-		assertThat(testCon.hasStatement(RDF.ALT, RDF.TYPE, triple, false)).isTrue();
+		assertThat(testCon.hasStatement(RDF.ALT, RDF.TYPE, tripleTerm, false)).isTrue();
 	}
 
 	@Test
 	@Disabled("Pending SPARQL 1.2 implementation and adapting test case to RDF 1.2")
 	public void testSparqlStar() {
-//		Triple rdfStarTriple = vf.createTriple(bob, FOAF.NAME, nameBob);
+//		TripleTerm rdfStarTriple = vf.createTriple(bob, FOAF.NAME, nameBob);
 //
 //		testCon.add(rdfStarTriple, RDF.TYPE, RDF.ALT);
 //
@@ -189,18 +189,18 @@ public abstract class TripleTermSupportTest {
 	@Test
 	public void testRdf12AddAndRetrieve() {
 
-		Triple insertedTriple = vf.createTriple(RDF.SUBJECT, RDF.PREDICATE, RDF.OBJECT);
-		Triple copyOfInsertedTriple = vf.createTriple(RDF.SUBJECT, RDF.PREDICATE, RDF.OBJECT);
+		TripleTerm insertedTripleTerm = vf.createTripleTerm(RDF.SUBJECT, RDF.PREDICATE, RDF.OBJECT);
+		TripleTerm copyOfInsertedTripleTerm = vf.createTripleTerm(RDF.SUBJECT, RDF.PREDICATE, RDF.OBJECT);
 		Literal literal = vf.createLiteral("I am a triple ;-D");
 		BNode reifier = vf.createBNode();
 		testCon.begin();
 
-		testCon.add(reifier, RDF.REIFIES, insertedTriple);
+		testCon.add(reifier, RDF.REIFIES, insertedTripleTerm);
 		testCon.add(reifier, RDF.TYPE, literal);
 
 		Assertions.assertEquals(1, testCon.getStatements(null, RDF.TYPE, literal, false).stream().count());
 		Assertions.assertEquals(1,
-				testCon.getStatements(null, RDF.REIFIES, copyOfInsertedTriple, false).stream().count());
+				testCon.getStatements(null, RDF.REIFIES, copyOfInsertedTripleTerm, false).stream().count());
 		testCon.commit();
 
 	}

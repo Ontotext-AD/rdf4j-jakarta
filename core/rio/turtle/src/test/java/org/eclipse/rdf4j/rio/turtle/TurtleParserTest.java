@@ -34,15 +34,13 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.base.CoreDatatype;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.DC;
-import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
-import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.rio.AbstractParserTest;
@@ -67,7 +65,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 	private final Statement simpleSPOStatement = vf.createStatement(vf.createIRI("http://example/s"),
 			vf.createIRI("http://example/p"), vf.createIRI("http://example/o"));
-	private final Triple simpleSPOTriple = vf.createTriple(vf.createIRI("http://example/s"),
+	private final TripleTerm simpleSPOTripleTerm = vf.createTripleTerm(vf.createIRI("http://example/s"),
 			vf.createIRI("http://example/p"), vf.createIRI("http://example/o"));
 
 	@Override
@@ -662,8 +660,8 @@ public class TurtleParserTest extends AbstractParserTest {
 				vf.createIRI("http://example/" + o));
 	}
 
-	private Triple simpleExampleTriple(String s, String p, String o) {
-		return vf.createTriple(vf.createIRI("http://example/" + s), vf.createIRI("http://example/" + p),
+	private TripleTerm simpleExampleTriple(String s, String p, String o) {
+		return vf.createTripleTerm(vf.createIRI("http://example/" + s), vf.createIRI("http://example/" + p),
 				vf.createIRI("http://example/" + o));
 	}
 
@@ -689,8 +687,8 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertEquals(stmt1.getSubject(), vf.createIRI("http://example/s"));
 			assertEquals(stmt1.getPredicate(), vf.createIRI("http://example/p"));
-			assertTrue(stmt1.getObject() instanceof Triple);
-			assertEquals(stmt1.getObject(), simpleSPOTriple);
+			assertTrue(stmt1.getObject() instanceof TripleTerm);
+			assertEquals(stmt1.getObject(), simpleSPOTripleTerm);
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
 		}
@@ -722,13 +720,13 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertEquals(stmt1.getSubject(), vf.createIRI("http://example/s"));
 			assertEquals(stmt1.getPredicate(), vf.createIRI("http://example/p"));
 
-			assertInstanceOf(Triple.class, stmt1.getObject());
-			Triple obj = (Triple) stmt1.getObject();
+			assertInstanceOf(TripleTerm.class, stmt1.getObject());
+			TripleTerm obj = (TripleTerm) stmt1.getObject();
 			assertEquals(obj.getSubject(), vf.createIRI("http://example/s2"));
 			assertEquals(obj.getPredicate(), vf.createIRI("http://example/p2"));
 
-			assertInstanceOf(Triple.class, obj.getObject());
-			Triple objObj = (Triple) obj.getObject();
+			assertInstanceOf(TripleTerm.class, obj.getObject());
+			TripleTerm objObj = (TripleTerm) obj.getObject();
 			assertEquals(objObj, simpleExampleTriple("s3", "p3", "o3"));
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
@@ -756,13 +754,13 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertEquals(stmt1.getSubject(), vf.createBNode("b"));
 			assertEquals(stmt1.getPredicate(), vf.createIRI("http://example/p"));
 
-			assertTrue(stmt1.getObject().isTriple());
-			Triple obj = (Triple) stmt1.getObject();
+			assertTrue(stmt1.getObject().isTripleTerm());
+			TripleTerm obj = (TripleTerm) stmt1.getObject();
 			assertEquals(obj.getSubject(), vf.createIRI("http://example/s2"));
 			assertEquals(obj.getPredicate(), vf.createIRI("http://example/p2"));
 
-			assertTrue(obj.getObject().isTriple());
-			obj = (Triple) obj.getObject();
+			assertTrue(obj.getObject().isTripleTerm());
+			obj = (TripleTerm) obj.getObject();
 			assertEquals(obj.getSubject(), vf.createBNode("b2"));
 			assertEquals(obj.getPredicate(), vf.createIRI("http://example/p3"));
 			assertEquals(obj.getObject(), vf.createLiteral(9));
@@ -792,8 +790,8 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertEquals(vf.createIRI("http://example/a"), stmt1.getSubject());
 			assertEquals(RDF.REIFIES, stmt1.getPredicate());
-			assertInstanceOf(Triple.class, stmt1.getObject());
-			assertEquals(stmt1.getObject(), simpleSPOTriple);
+			assertInstanceOf(TripleTerm.class, stmt1.getObject());
+			assertEquals(stmt1.getObject(), simpleSPOTripleTerm);
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
 		}
@@ -821,8 +819,8 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertEquals(vf.createIRI("http://example/s"), stmt1.getSubject());
 			assertEquals(RDF.REIFIES, stmt1.getPredicate());
-			assertInstanceOf(Triple.class, stmt1.getObject());
-			assertEquals(stmt1.getObject(), vf.createTriple(vf.createIRI("http://example/s2"),
+			assertInstanceOf(TripleTerm.class, stmt1.getObject());
+			assertEquals(stmt1.getObject(), vf.createTripleTerm(vf.createIRI("http://example/s2"),
 					vf.createIRI("http://example/p2"), vf.createIRI("http://example/o2")));
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
@@ -855,7 +853,7 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertEquals(stmt2, vf.createStatement(vf.createIRI("http://example/a"), RDF.REIFIES,
 					simpleExampleTriple("s1", "p1", "o1")));
 			assertEquals(stmt3, vf.createStatement(vf.createIRI("http://example/r"), RDF.REIFIES,
-					vf.createTriple(vf.createIRI("http://example/23"), RDF.REIFIES,
+					vf.createTripleTerm(vf.createIRI("http://example/23"), RDF.REIFIES,
 							simpleExampleTriple("s3", "p3", "o3"))));
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
@@ -882,7 +880,7 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertThat(model).hasSize(3);
 
 			assertTrue(model.contains(simpleSPOStatement));
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTriple);
+			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTripleTerm);
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);
@@ -913,7 +911,7 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertThat(model).hasSize(3);
 
 			assertTrue(model.contains(simpleSPOStatement));
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTriple);
+			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTripleTerm);
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);
@@ -943,7 +941,7 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertThat(model).hasSize(2);
 
 			assertTrue(model.contains(simpleSPOStatement));
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTriple);
+			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTripleTerm);
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);
@@ -972,7 +970,7 @@ public class TurtleParserTest extends AbstractParserTest {
 			assertThat(model).hasSize(4);
 
 			assertTrue(model.contains(simpleSPOStatement));
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTriple);
+			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTripleTerm);
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);
@@ -1022,7 +1020,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(2);
 
-			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTriple));
+			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTripleTerm));
 			assertTrue(model.contains(vf.createIRI("http://example/x"), vf.createIRI("http://example/p"),
 					vf.createBNode("b1")));
 		} catch (RDFParseException e) {
@@ -1045,7 +1043,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(2);
 
-			assertTrue(model.contains(null, RDF.REIFIES, simpleSPOTriple));
+			assertTrue(model.contains(null, RDF.REIFIES, simpleSPOTripleTerm));
 			assertTrue(model.contains(simpleSPOStatement));
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
@@ -1067,7 +1065,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(2);
 
-			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTriple));
+			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTripleTerm));
 			assertTrue(model.contains(simpleSPOStatement));
 		} catch (RDFParseException e) {
 			fail("parse error on correct data: " + e.getMessage());
@@ -1089,7 +1087,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(3);
 
-			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTriple));
+			assertTrue(model.contains(vf.createBNode("b1"), RDF.REIFIES, simpleSPOTripleTerm));
 			assertTrue(model.contains(simpleSPOStatement));
 			assertTrue(model.contains(vf.createBNode("b1"), vf.createIRI("http://example/p2"),
 					vf.createIRI("http://example/o2")));
@@ -1115,7 +1113,7 @@ public class TurtleParserTest extends AbstractParserTest {
 
 			assertTrue(model.contains(simpleSPOStatement));
 
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTriple);
+			Model reifyingTriples = model.filter(null, RDF.REIFIES, simpleSPOTripleTerm);
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);

@@ -20,7 +20,7 @@ import org.eclipse.rdf4j.common.io.Sink;
 import org.eclipse.rdf4j.common.lang.FileFormat;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Statements;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
@@ -98,7 +98,7 @@ public abstract class AbstractRDFWriter implements RDFWriter, Sink {
 			statementConsumer = this::handleStatementConvertTripleTerms;
 		} else if (!getRDFFormat().supportsTripleTerms()
 				&& getWriterConfig().get(BasicWriterSettings.ENCODE_TRIPLE_TERMS)) {
-			// By default, non-RDF-12 writers encode triple terms to special RDF IRIs
+			// By default, non-RDF-12 writers encode tripleTerm terms to special RDF IRIs
 			// (all parsers, including RDF 1.2 will convert back the encoded IRIs)
 			statementConsumer = this::handleStatementEncodeTripleTerms;
 		}
@@ -149,7 +149,7 @@ public abstract class AbstractRDFWriter implements RDFWriter, Sink {
 	private void handleStatementEncodeTripleTerms(Statement st) {
 		Resource s = st.getSubject();
 		Value o = st.getObject();
-		if (s instanceof Triple || o instanceof Triple) {
+		if (s instanceof TripleTerm || o instanceof TripleTerm) {
 			consumeStatement(new TripleTermEncodingStatement(st));
 		} else {
 			consumeStatement(st);

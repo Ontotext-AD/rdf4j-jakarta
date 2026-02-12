@@ -785,7 +785,7 @@ public class TurtleWriterTest extends AbstractTurtleWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createIRI(ns, "s"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"), vf.createIRI(ns, "o")));
+				vf.createTripleTerm(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"), vf.createIRI(ns, "o")));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.TURTLE);
@@ -799,8 +799,8 @@ public class TurtleWriterTest extends AbstractTurtleWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createIRI(ns, "s"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"),
-						vf.createTriple(vf.createIRI(ns, "s3"), vf.createIRI(ns, "p3"), vf.createIRI(ns, "o"))));
+				vf.createTripleTerm(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"),
+						vf.createTripleTerm(vf.createIRI(ns, "s3"), vf.createIRI(ns, "p3"), vf.createIRI(ns, "o"))));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.TURTLE);
@@ -814,8 +814,8 @@ public class TurtleWriterTest extends AbstractTurtleWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createBNode("b"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s"), vf.createIRI(ns, "p2"),
-						vf.createTriple(vf.createBNode("b2"), vf.createIRI(ns, "p3"), vf.createLiteral(9))));
+				vf.createTripleTerm(vf.createIRI(ns, "s"), vf.createIRI(ns, "p2"),
+						vf.createTripleTerm(vf.createBNode("b2"), vf.createIRI(ns, "p3"), vf.createLiteral(9))));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.TURTLE);
@@ -827,7 +827,7 @@ public class TurtleWriterTest extends AbstractTurtleWriterTest {
 	@Test
 	public void testVersionAnnouncementTripleTerm() {
 		Model model = new DynamicModelFactory().createEmptyModel();
-		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTriple(vf.createBNode("b2"),
+		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTripleTerm(vf.createBNode("b2"),
 				vf.createIRI("http://example.com/p"), vf.createLiteral("literal")));
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.TURTLE,
@@ -854,7 +854,7 @@ public class TurtleWriterTest extends AbstractTurtleWriterTest {
 	@Test
 	public void testVersionAnnouncementPrintsOnce() {
 		Model model = new DynamicModelFactory().createEmptyModel();
-		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTriple(vf.createBNode("b2"),
+		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTripleTerm(vf.createBNode("b2"),
 				vf.createIRI("http://example.com/p"), vf.createLiteral("literal")));
 		model.add(vf.createBNode("b"), RDF.ALT, vf.createLiteral("literal", "en", Literal.BaseDirection.LTR));
 		StringWriter stringWriter = new StringWriter();

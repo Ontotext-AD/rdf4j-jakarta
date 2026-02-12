@@ -54,7 +54,7 @@ public abstract class AbstractNTriplesWriterTest extends RDFWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createIRI(ns, "s"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"), vf.createIRI(ns, "o")));
+				vf.createTripleTerm(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"), vf.createIRI(ns, "o")));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.NTRIPLES);
@@ -70,8 +70,8 @@ public abstract class AbstractNTriplesWriterTest extends RDFWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createIRI(ns, "s"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"),
-						vf.createTriple(vf.createIRI(ns, "s3"), vf.createIRI(ns, "p3"), vf.createIRI(ns, "o"))));
+				vf.createTripleTerm(vf.createIRI(ns, "s2"), vf.createIRI(ns, "p2"),
+						vf.createTripleTerm(vf.createIRI(ns, "s3"), vf.createIRI(ns, "p3"), vf.createIRI(ns, "o"))));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.NTRIPLES);
@@ -87,8 +87,8 @@ public abstract class AbstractNTriplesWriterTest extends RDFWriterTest {
 		String ns = "http://www.example.com/";
 		model.setNamespace("", ns);
 		model.add(vf.createBNode("b"), vf.createIRI(ns, "p"),
-				vf.createTriple(vf.createIRI(ns, "s"), vf.createIRI(ns, "p2"),
-						vf.createTriple(vf.createBNode("b2"), vf.createIRI(ns, "p3"), vf.createLiteral(9))));
+				vf.createTripleTerm(vf.createIRI(ns, "s"), vf.createIRI(ns, "p2"),
+						vf.createTripleTerm(vf.createBNode("b2"), vf.createIRI(ns, "p3"), vf.createLiteral(9))));
 
 		StringWriter stringWriter = new StringWriter();
 		Rio.write(model, stringWriter, RDFFormat.NTRIPLES);

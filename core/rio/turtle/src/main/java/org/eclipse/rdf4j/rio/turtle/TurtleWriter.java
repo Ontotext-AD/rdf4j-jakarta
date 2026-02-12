@@ -37,7 +37,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ModelFactory;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.datatypes.XMLDatatypeUtil;
 import org.eclipse.rdf4j.model.impl.LinkedHashModelFactory;
@@ -523,8 +523,8 @@ public class TurtleWriter extends AbstractRDFWriter implements CharSink {
 			stack.addLast((BNode) val);
 		} else if (val instanceof Resource) {
 			writeResource((Resource) val, canShorten);
-		} else if (val instanceof Triple) {
-			writeTriple((Triple) val, canShorten);
+		} else if (val instanceof TripleTerm) {
+			writeTriple((TripleTerm) val, canShorten);
 		} else {
 			writeLiteral((Literal) val);
 		}
@@ -556,7 +556,7 @@ public class TurtleWriter extends AbstractRDFWriter implements CharSink {
 		} else if (res instanceof BNode) {
 			writeBNode((BNode) res, canShorten);
 		} else {
-			writeTriple((Triple) res, canShorten);
+			writeTriple((TripleTerm) res, canShorten);
 		}
 	}
 
@@ -648,17 +648,17 @@ public class TurtleWriter extends AbstractRDFWriter implements CharSink {
 		}
 	}
 
-	protected void writeTriple(Triple triple, boolean canShorten) throws IOException {
+	protected void writeTriple(TripleTerm tripleTerm, boolean canShorten) throws IOException {
 		writer.write("<<( ");
-		writeResource(triple.getSubject(), canShorten);
+		writeResource(tripleTerm.getSubject(), canShorten);
 		writer.write(" ");
-		writeURI(triple.getPredicate());
+		writeURI(tripleTerm.getPredicate());
 		writer.write(" ");
-		Value object = triple.getObject();
+		Value object = tripleTerm.getObject();
 		if (object instanceof Literal) {
 			writeLiteral((Literal) object);
-		} else if (object instanceof Triple) {
-			writeTriple((Triple) object, canShorten);
+		} else if (object instanceof TripleTerm) {
+			writeTriple((TripleTerm) object, canShorten);
 		} else {
 			writeResource((Resource) object, canShorten);
 		}
@@ -968,7 +968,7 @@ public class TurtleWriter extends AbstractRDFWriter implements CharSink {
 	}
 
 	private static boolean usesVersion12(Value v) {
-		return v.isTriple() || (v.isLiteral() && ((Literal) v).getDatatype() == RDF.DIRLANGSTRING);
+		return v.isTripleTerm() || (v.isLiteral() && ((Literal) v).getDatatype() == RDF.DIRLANGSTRING);
 	}
 
 }

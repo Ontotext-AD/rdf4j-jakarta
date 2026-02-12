@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -28,7 +28,7 @@ public class TripleTermUtil {
 	/**
 	 * IRI prefix for RDF 1.2 triples encoded as IRIs.
 	 */
-	public static final String TRIPLE_PREFIX = "urn:rdf4j:triple:";
+	public static final String TRIPLE_PREFIX = "urn:rdf4j:tripleTerm:";
 
 	private static final ValueFactory VF = SimpleValueFactory.getInstance();
 
@@ -42,10 +42,10 @@ public class TripleTermUtil {
 	 *
 	 * @param value a RDF 1.2 {@link Value} to encode.
 	 * @param <T>
-	 * @return the RDF-compatible encoded value, if a {@link Triple} was supplied, or the supplied value otherwise.
+	 * @return the RDF-compatible encoded value, if a {@link TripleTerm} was supplied, or the supplied value otherwise.
 	 */
 	public static <T extends Value> T toRDFEncodedValue(T value) {
-		return value instanceof Triple
+		return value instanceof TripleTerm
 				? (T) VF.createIRI(TRIPLE_PREFIX + encode(NTriplesUtil.toNTriplesString(value)))
 				: value;
 	}
@@ -57,9 +57,9 @@ public class TripleTermUtil {
 	 *
 	 * @param encodedValue an RDF {@link Value} to convert to RDF 1.2.
 	 * @param <T>
-	 * @return the decoded RDF 1.2 triple, if a {@link Triple} encoded as {@link IRI} was supplied, or the supplied
-	 *         value otherwise.
-	 * @throws IllegalArgumentException if the supplied value looked like an RDF 1.2 triple encoded as an IRI but it
+	 * @return the decoded RDF 1.2 tripleTerm, if a {@link TripleTerm} encoded as {@link IRI} was supplied, or the
+	 *         supplied value otherwise.
+	 * @throws IllegalArgumentException if the supplied value looked like an RDF 1.2 tripleTerm encoded as an IRI but it
 	 *                                  could not be decoded successfully.
 	 */
 	public static <T extends Value> T fromRDFEncodedValue(T encodedValue) {
@@ -69,7 +69,7 @@ public class TripleTermUtil {
 							encodedValue.stringValue().substring(TRIPLE_PREFIX.length())), VF)
 					: encodedValue;
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Invalid RDF 1.2 encoded triple: " + encodedValue);
+			throw new IllegalArgumentException("Invalid RDF 1.2 encoded tripleTerm: " + encodedValue);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class TripleTermUtil {
 							encodedValue.stringValue().substring(TRIPLE_PREFIX.length())), valueFactory)
 					: encodedValue;
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Invalid RDF 1.2 encoded triple: " + encodedValue);
+			throw new IllegalArgumentException("Invalid RDF 1.2 encoded tripleTerm: " + encodedValue);
 		}
 	}
 

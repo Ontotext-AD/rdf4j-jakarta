@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
 import org.slf4j.Logger;
@@ -216,9 +216,9 @@ class GraphComparisons {
 				blankNodes.add((BNode) st.getContext());
 			}
 
-			Triple t = triple(st);
-			while (t.getObject().isTriple()) {
-				t = (Triple) t.getObject();
+			TripleTerm t = triple(st);
+			while (t.getObject().isTripleTerm()) {
+				t = (TripleTerm) t.getObject();
 
 				if (t.getSubject().isBNode()) {
 					blankNodes.add((BNode) t.getSubject());
@@ -320,7 +320,7 @@ class GraphComparisons {
 		Model result = new DynamicModelFactory().createEmptyModel();
 
 		for (Statement st : original) {
-			if (st.getSubject().isBNode() || st.getObject().isBNode() || st.getObject().isTriple()
+			if (st.getSubject().isBNode() || st.getObject().isBNode() || st.getObject().isTripleTerm()
 					|| (st.getContext() != null && st.getContext().isBNode())) {
 				Resource subject = st.getSubject().isBNode()
 						? createCanonicalBNode((BNode) st.getSubject(), hash)
@@ -332,16 +332,16 @@ class GraphComparisons {
 				Value object;
 				if (st.getObject().isBNode()) {
 					object = createCanonicalBNode((BNode) st.getObject(), hash);
-				} else if (st.getObject().isTriple()) {
-					Triple triple = (Triple) st.getObject();
+				} else if (st.getObject().isTripleTerm()) {
+					TripleTerm tripleTerm = (TripleTerm) st.getObject();
 					object = triple(
-							triple.getSubject().isBNode()
-									? createCanonicalBNode((BNode) triple.getSubject(), hash)
-									: triple.getSubject(),
-							triple.getPredicate(),
-							triple.getObject().isBNode()
-									? createCanonicalBNode((BNode) triple.getObject(), hash)
-									: triple.getObject());
+							tripleTerm.getSubject().isBNode()
+									? createCanonicalBNode((BNode) tripleTerm.getSubject(), hash)
+									: tripleTerm.getSubject(),
+							tripleTerm.getPredicate(),
+							tripleTerm.getObject().isBNode()
+									? createCanonicalBNode((BNode) tripleTerm.getObject(), hash)
+									: tripleTerm.getObject());
 				} else {
 					object = st.getObject();
 				}
@@ -386,8 +386,8 @@ class GraphComparisons {
 					}
 
 					for (Statement st : m.getStatements(null, null, null)) {
-						if (st.getObject().isTriple()) {
-							hashBNodeInTripleTerms((Triple) st.getObject(), b, partitioning);
+						if (st.getObject().isTripleTerm()) {
+							hashBNodeInTripleTerms((TripleTerm) st.getObject(), b, partitioning);
 						}
 					}
 
@@ -397,7 +397,7 @@ class GraphComparisons {
 		return partitioning;
 	}
 
-	private static void hashBNodeInTripleTerms(Triple t, BNode b, Partitioning partitioning) {
+	private static void hashBNodeInTripleTerms(TripleTerm t, BNode b, Partitioning partitioning) {
 		if (t.getSubject().equals(b)) {
 			HashCode c = hashTuple(
 					partitioning.getPreviousHashCode(t.getObject()),
@@ -414,8 +414,8 @@ class GraphComparisons {
 			partitioning.setCurrentHashCode(b,
 					hashBag(c, partitioning.getCurrentHashCode(b)));
 		}
-		if (t.getObject().isTriple()) {
-			hashBNodeInTripleTerms((Triple) t.getObject(), b, partitioning);
+		if (t.getObject().isTripleTerm()) {
+			hashBNodeInTripleTerms((TripleTerm) t.getObject(), b, partitioning);
 		}
 	}
 
@@ -486,10 +486,10 @@ class GraphComparisons {
 			if (value.isLiteral()) {
 				return getStaticLiteralHashCode((Literal) value);
 			}
-			if (value.isTriple()) {
-				return hashTuple(getPreviousHashCode(((Triple) value).getSubject()),
-						getPreviousHashCode(((Triple) value).getPredicate()),
-						getPreviousHashCode(((Triple) value).getObject()));
+			if (value.isTripleTerm()) {
+				return hashTuple(getPreviousHashCode(((TripleTerm) value).getSubject()),
+						getPreviousHashCode(((TripleTerm) value).getPredicate()),
+						getPreviousHashCode(((TripleTerm) value).getObject()));
 			}
 			return staticValueMapping.computeIfAbsent(value,
 					v -> hashFunction.hashString(v.stringValue(), StandardCharsets.UTF_8));

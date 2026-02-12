@@ -775,8 +775,8 @@ public abstract class SailSourceConnection extends AbstractNotifyingSailConnecti
 			}
 		} else {
 			for (Resource ctx : contexts) {
-				if (ctx != null && ctx.isTriple()) {
-					throw new SailException("context argument can not be of type Triple: " + ctx.stringValue());
+				if (ctx != null && ctx.isTripleTerm()) {
+					throw new SailException("context argument can not be of type TripleTerm: " + ctx.stringValue());
 				}
 
 				Resource[] contextsToCheck;

@@ -29,12 +29,11 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.base.CoreDatatype;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -74,7 +73,7 @@ public class TurtleParser extends AbstractRDFParser {
 
 	protected Resource currReifier;
 
-	protected Triple currTripleTerm;
+	protected TripleTerm currTripleTerm;
 
 	private int lineNumber = 1;
 
@@ -447,7 +446,7 @@ public class TurtleParser extends AbstractRDFParser {
 		} else {
 			Value value = parseValue();
 
-			if (value instanceof Resource) {
+			if (value instanceof Resource && !(value instanceof TripleTerm)) {
 				subject = (Resource) value;
 			} else if (value != null) {
 				reportFatalError("Illegal subject value: " + value);
@@ -1456,7 +1455,7 @@ public class TurtleParser extends AbstractRDFParser {
 	 * @return An RDF-1.2 triple term.
 	 * @throws IOException
 	 */
-	protected Triple parseTripleTerm() throws IOException {
+	protected TripleTerm parseTripleTerm() throws IOException {
 		verifyCharacterOrFail(readCodePoint(), "<");
 		verifyCharacterOrFail(readCodePoint(), "<");
 		verifyCharacterOrFail(readCodePoint(), "(");
@@ -1472,7 +1471,7 @@ public class TurtleParser extends AbstractRDFParser {
 				verifyCharacterOrFail(readCodePoint(), ")");
 				verifyCharacterOrFail(readCodePoint(), ">");
 				verifyCharacterOrFail(readCodePoint(), ">");
-				return valueFactory.createTriple((Resource) subject, predicate, object);
+				return valueFactory.createTripleTerm((Resource) subject, predicate, object);
 			} else {
 				reportFatalError("Missing object in triple term");
 			}
@@ -1488,7 +1487,7 @@ public class TurtleParser extends AbstractRDFParser {
 		verifyCharacterOrFail(readCodePoint(), "<");
 		skipWSC();
 
-		Triple oldTripleTerm = currTripleTerm;
+		TripleTerm oldTripleTerm = currTripleTerm;
 
 		Value rtSubject;
 		if (peekIsReifiedTriple()) {
@@ -1510,7 +1509,7 @@ public class TurtleParser extends AbstractRDFParser {
 
 			if (rtObject != null) {
 
-				currTripleTerm = valueFactory.createTriple((Resource) rtSubject, predicate, rtObject);
+				currTripleTerm = valueFactory.createTripleTerm((Resource) rtSubject, predicate, rtObject);
 
 				Resource reifier;
 
@@ -1566,7 +1565,7 @@ public class TurtleParser extends AbstractRDFParser {
 		verifyCharacterOrFail(readCodePoint(), "|");
 		skipWSC();
 
-		final Triple oldTripleTerm = currTripleTerm;
+		final TripleTerm oldTripleTerm = currTripleTerm;
 
 		if (currReifier == null) {
 			addReifyingTriple(valueFactory.createBNode());
@@ -1586,7 +1585,7 @@ public class TurtleParser extends AbstractRDFParser {
 		final Resource oldSubject = subject;
 		final IRI oldPredicate = predicate;
 
-		currTripleTerm = valueFactory.createTriple(subject, predicate, object);
+		currTripleTerm = valueFactory.createTripleTerm(subject, predicate, object);
 		currReifier = null;
 
 		int c = skipWSC();

@@ -22,7 +22,7 @@
 //import org.eclipse.rdf4j.model.IRI;
 //import org.eclipse.rdf4j.model.Resource;
 //import org.eclipse.rdf4j.model.Statement;
-//import org.eclipse.rdf4j.model.Triple;
+//import org.eclipse.rdf4j.model.TripleTerm;
 //import org.eclipse.rdf4j.model.Value;
 //import org.eclipse.rdf4j.model.ValueFactory;
 //import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -49,7 +49,7 @@
 //public class EvaluationStrategyWithRDFStarTest {
 //
 //	// the triples over which the evaluations is carried
-//	private final ArrayList<Triple> triples = new ArrayList<>();
+//	private final ArrayList<TripleTerm> triples = new ArrayList<>();
 //
 //	ValueFactory vf = SimpleValueFactory.getInstance();
 //
@@ -64,12 +64,12 @@
 //	 * @author damyan.ognyanov
 //	 */
 //	class CommonBaseSource {
-//		public CloseableIteration<? extends Triple> getRdfStarTriples(Resource subj,
+//		public CloseableIteration<? extends TripleTerm> getRdfStarTriples(Resource subj,
 //				IRI pred, Value obj)
 //				throws QueryEvaluationException {
 //			return new AbstractCloseableIteration<>() {
 //
-//				final Iterator<Triple> iter = triples.iterator();
+//				final Iterator<TripleTerm> iter = triples.iterator();
 //
 //				@Override
 //				public boolean hasNext()
@@ -78,7 +78,7 @@
 //				}
 //
 //				@Override
-//				public Triple next()
+//				public TripleTerm next()
 //						throws QueryEvaluationException {
 //					return iter.next();
 //				}
@@ -103,40 +103,40 @@
 //
 //			// handle (*, rdf:type, rdf:Statement)
 //			if (pred != null && pred.equals(RDF.TYPE) && obj != null && obj.equals(RDF.STATEMENT)) {
-//				return new ConvertingIteration<Triple, Statement>(
+//				return new ConvertingIteration<TripleTerm, Statement>(
 //						getRdfStarTriples(null, null, null)) {
 //					@Override
-//					protected Statement convert(Triple sourceObject)
+//					protected Statement convert(TripleTerm sourceObject)
 //							throws QueryEvaluationException {
 //						return vf.createStatement(sourceObject, RDF.TYPE, RDF.STATEMENT);
 //					}
 //				};
 //			} else if (pred != null && pred.equals(RDF.SUBJECT)) {
 //				// handle (*, rdf:subject, *)
-//				return new ConvertingIteration<Triple, Statement>(
+//				return new ConvertingIteration<TripleTerm, Statement>(
 //						getRdfStarTriples(null, null, null)) {
 //					@Override
-//					protected Statement convert(Triple sourceObject)
+//					protected Statement convert(TripleTerm sourceObject)
 //							throws QueryEvaluationException {
 //						return vf.createStatement(sourceObject, RDF.SUBJECT, sourceObject.getSubject());
 //					}
 //				};
 //			} else if (pred != null && pred.equals(RDF.PREDICATE)) {
 //				// handle (*, rdf:predicate, *)
-//				return new ConvertingIteration<Triple, Statement>(
+//				return new ConvertingIteration<TripleTerm, Statement>(
 //						getRdfStarTriples(null, null, null)) {
 //					@Override
-//					protected Statement convert(Triple sourceObject)
+//					protected Statement convert(TripleTerm sourceObject)
 //							throws QueryEvaluationException {
 //						return vf.createStatement(sourceObject, RDF.PREDICATE, sourceObject.getPredicate());
 //					}
 //				};
 //			} else if (pred != null && pred.equals(RDF.OBJECT)) {
 //				// handle (*, rdf:object, *)
-//				return new ConvertingIteration<Triple, Statement>(
+//				return new ConvertingIteration<TripleTerm, Statement>(
 //						getRdfStarTriples(null, null, null)) {
 //					@Override
-//					protected Statement convert(Triple sourceObject)
+//					protected Statement convert(TripleTerm sourceObject)
 //							throws QueryEvaluationException {
 //						return vf.createStatement(sourceObject, RDF.OBJECT, sourceObject.getObject());
 //					}
@@ -184,7 +184,7 @@
 //				}
 //
 //				@Override
-//				public CloseableIteration<? extends Triple> getRdfStarTriples(Resource subj,
+//				public CloseableIteration<? extends TripleTerm> getRdfStarTriples(Resource subj,
 //						IRI pred, Value obj)
 //						throws QueryEvaluationException {
 //					return baseSource.getRdfStarTriples(subj, pred, obj);
@@ -323,7 +323,7 @@
 //	@ParameterizedTest(name = "RDF-star={0}")
 //	@ValueSource(booleans = { false, true })
 //	public void testExtVarBound(boolean bRDFStarData) {
-//		Triple triple = triples.get(0);
+//		TripleTerm triple = triples.get(0);
 //		QueryBindingSet set = (QueryBindingSet) createWithVarValue(tripleRefNode.getExprVar(), triple);
 //
 //		EvaluationStrategy strategy = new StrictEvaluationStrategy(createSource(bRDFStarData), null);
@@ -347,7 +347,7 @@
 //		return ret;
 //	}
 //
-//	private BindingSet fromTriple(Triple t) {
+//	private BindingSet fromTriple(TripleTerm t) {
 //		QueryBindingSet ret = new QueryBindingSet();
 //		ret.addBinding("extern", t);
 //		ret.addBinding("s", t.getSubject());

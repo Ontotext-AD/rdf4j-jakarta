@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Literals;
 import org.eclipse.rdf4j.rio.helpers.TripleTermUtil;
@@ -291,7 +291,7 @@ class FileIO {
 				writeString(label, dataOut);
 				writeValue(datatype, dataOut);
 			}
-		} else if (value.isTriple()) {
+		} else if (value.isTripleTerm()) {
 			dataOut.writeByte(RDFSTAR_TRIPLE_MARKER);
 			writeValue(TripleTermUtil.toRDFEncodedValue(value), dataOut);
 		} else {
@@ -321,8 +321,8 @@ class FileIO {
 			return vf.createLiteral(label, datatype);
 		} else if (valueTypeMarker == RDFSTAR_TRIPLE_MARKER) {
 			IRI rdfStarEncodedTriple = (IRI) readValue(dataIn);
-			Triple triple = (Triple) TripleTermUtil.fromRDFEncodedValue(rdfStarEncodedTriple, vf);
-			return vf.getOrCreateMemTriple(triple);
+			TripleTerm tripleTerm = (TripleTerm) TripleTermUtil.fromRDFEncodedValue(rdfStarEncodedTriple, vf);
+			return vf.getOrCreateMemTripleTerm(tripleTerm);
 		} else {
 			throw new IOException("Invalid value type marker: " + valueTypeMarker);
 		}

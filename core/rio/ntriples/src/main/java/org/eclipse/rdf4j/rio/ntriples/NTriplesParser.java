@@ -27,7 +27,7 @@ import org.eclipse.rdf4j.common.text.ASCIIUtil;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -327,7 +327,7 @@ public class NTriplesParser extends AbstractRDFParser {
 		}
 	}
 
-	private Triple parseTripleTerm() {
+	private TripleTerm parseTripleTerm() {
 		if (currentIndex + 2 >= lineChars.length || lineChars[currentIndex] != '<' || lineChars[currentIndex + 1] != '<'
 				|| lineChars[currentIndex + 2] != '(') {
 			reportError(
@@ -354,7 +354,7 @@ public class NTriplesParser extends AbstractRDFParser {
 					NTriplesParserSettings.FAIL_ON_INVALID_LINES);
 		}
 		currentIndex += 3;
-		return valueFactory.createTriple(ttSubject, ttPredicate, ttObject);
+		return valueFactory.createTripleTerm(ttSubject, ttPredicate, ttObject);
 	}
 
 	private String parseLabel() {

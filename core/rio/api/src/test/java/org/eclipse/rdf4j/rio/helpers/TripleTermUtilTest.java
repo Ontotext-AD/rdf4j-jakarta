@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -54,12 +54,12 @@ public class TripleTermUtilTest {
 		assertSame(bNode, TripleTermUtil.toRDFEncodedValue(bNode));
 		assertFalse(TripleTermUtil.isEncodedTriple(bNode));
 
-		Triple triple = vf.createTriple(iri, RDF.TYPE, literal1);
+		TripleTerm tripleTerm = vf.createTripleTerm(iri, RDF.TYPE, literal1);
 		assertEquals(vf.createIRI(
-				"urn:rdf4j:triple:PDwoIDx1cm46YT4gPGh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyN0eXBlPiAicGxhaW4iICk-Pg=="),
-				TripleTermUtil.<Value>toRDFEncodedValue(triple));
-		assertFalse(TripleTermUtil.isEncodedTriple(triple));
-		assertTrue(TripleTermUtil.isEncodedTriple(TripleTermUtil.toRDFEncodedValue(triple)));
+				"urn:rdf4j:tripleTerm:PDwoIDx1cm46YT4gPGh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyN0eXBlPiAicGxhaW4iICk-Pg=="),
+				TripleTermUtil.<Value>toRDFEncodedValue(tripleTerm));
+		assertFalse(TripleTermUtil.isEncodedTriple(tripleTerm));
+		assertTrue(TripleTermUtil.isEncodedTriple(TripleTermUtil.toRDFEncodedValue(tripleTerm)));
 	}
 
 	@Test
@@ -81,26 +81,26 @@ public class TripleTermUtilTest {
 		BNode bNode = vf.createBNode("bnode1");
 		assertSame(bNode, TripleTermUtil.fromRDFEncodedValue(bNode));
 
-		Value encoded = TripleTermUtil.toRDFEncodedValue(vf.createTriple(iri, RDF.TYPE, literal1));
+		Value encoded = TripleTermUtil.toRDFEncodedValue(vf.createTripleTerm(iri, RDF.TYPE, literal1));
 		Value decoded = TripleTermUtil.fromRDFEncodedValue(encoded);
-		assertTrue(decoded instanceof Triple);
-		assertEquals(iri, ((Triple) decoded).getSubject());
-		assertEquals(RDF.TYPE, ((Triple) decoded).getPredicate());
-		assertEquals(literal1, ((Triple) decoded).getObject());
+		assertTrue(decoded instanceof TripleTerm);
+		assertEquals(iri, ((TripleTerm) decoded).getSubject());
+		assertEquals(RDF.TYPE, ((TripleTerm) decoded).getPredicate());
+		assertEquals(literal1, ((TripleTerm) decoded).getObject());
 	}
 
 	@Test
 	public void testInvalidEncodedValue() {
 		IRI[] invalidValues = {
-				vf.createIRI("urn:rdf4j:triple:"),
-				vf.createIRI("urn:rdf4j:triple:foo"),
-				vf.createIRI("urn:rdf4j:triple:кирилица"),
-				vf.createIRI("urn:rdf4j:triple:PDw8dXJuOmE-"),
+				vf.createIRI("urn:rdf4j:tripleTerm:"),
+				vf.createIRI("urn:rdf4j:tripleTerm:foo"),
+				vf.createIRI("urn:rdf4j:tripleTerm:кирилица"),
+				vf.createIRI("urn:rdf4j:tripleTerm:PDw8dXJuOmE-"),
 				// Missing final -
-				vf.createIRI("urn:rdf4j:triple:PDw8dXJuOmE-IDxodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1ze"
+				vf.createIRI("urn:rdf4j:tripleTerm:PDw8dXJuOmE-IDxodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1ze"
 						+ "W50YXgtbnMjdHlwZT4gInBsYWluIj4"),
 				// Extra x at the end
-				vf.createIRI("urn:rdf4j:triple:PDw8dXJuOmE-IDxodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1ze"
+				vf.createIRI("urn:rdf4j:tripleTerm:PDw8dXJuOmE-IDxodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1ze"
 						+ "W50YXgtbnMjdHlwZT4gInBsYWluIj4-x"),
 		};
 
@@ -110,7 +110,7 @@ public class TripleTermUtilTest {
 				TripleTermUtil.fromRDFEncodedValue(invalidValue);
 				fail("Must fail because of invalid value");
 			} catch (IllegalArgumentException e) {
-				assertTrue(e.getMessage().startsWith("Invalid RDF 1.2 encoded triple"));
+				assertTrue(e.getMessage().startsWith("Invalid RDF 1.2 encoded tripleTerm"));
 			}
 		}
 	}

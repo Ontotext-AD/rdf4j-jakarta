@@ -30,7 +30,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -1003,15 +1003,15 @@ public abstract class AbstractParserHandlingTest {
 	@Test
 	public void testRDF12Compatibility1() throws Exception {
 		Model expectedModel = new LinkedHashModel();
-		Triple t1 = vf.createTriple(vf.createIRI("http://example.com/1"), vf.createIRI("http://example.com/2"),
+		TripleTerm t1 = vf.createTripleTerm(vf.createIRI("http://example.com/1"), vf.createIRI("http://example.com/2"),
 				vf.createLiteral("example", vf.createIRI("http://example.com/3")));
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/4"), DC.SOURCE, t1));
-		Triple t2 = vf.createTriple(vf.createIRI("http://example.com/s"), DC.DATE, t1);
+		TripleTerm t2 = vf.createTripleTerm(vf.createIRI("http://example.com/s"), DC.DATE, t1);
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/5"), DC.RELATION, t2));
-		Triple t3 = vf.createTriple(vf.createIRI("urn:e"),
+		TripleTerm t3 = vf.createTripleTerm(vf.createIRI("urn:e"),
 				vf.createIRI("urn:f"),
-				vf.createTriple(vf.createIRI("urn:c"), vf.createIRI("urn:d"),
-						vf.createTriple(vf.createIRI("urn:a"), RDF.TYPE,
+				vf.createTripleTerm(vf.createIRI("urn:c"), vf.createIRI("urn:d"),
+						vf.createTripleTerm(vf.createIRI("urn:a"), RDF.TYPE,
 								vf.createIRI("urn:b"))));
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/s2"), vf.createIRI("urn:same"), t3));
 
@@ -1024,15 +1024,15 @@ public abstract class AbstractParserHandlingTest {
 	@Test
 	public void testRDF12Compatibility2() throws Exception {
 		Model expectedModel = new LinkedHashModel();
-		Triple t1 = vf.createTriple(vf.createIRI("http://example.com/1"), vf.createIRI("http://example.com/2"),
+		TripleTerm t1 = vf.createTripleTerm(vf.createIRI("http://example.com/1"), vf.createIRI("http://example.com/2"),
 				vf.createLiteral("example", vf.createIRI("http://example.com/3")));
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/4"), DC.SOURCE, t1));
-		Triple t2 = vf.createTriple(vf.createIRI("http://example.com/s"), DC.DATE, t1);
+		TripleTerm t2 = vf.createTripleTerm(vf.createIRI("http://example.com/s"), DC.DATE, t1);
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/5"), DC.RELATION, t2));
-		Triple t3 = vf.createTriple(vf.createIRI("urn:e"),
+		TripleTerm t3 = vf.createTripleTerm(vf.createIRI("urn:e"),
 				vf.createIRI("urn:f"),
-				vf.createTriple(vf.createIRI("urn:c"), vf.createIRI("urn:d"),
-						vf.createTriple(vf.createIRI("urn:a"), RDF.TYPE,
+				vf.createTripleTerm(vf.createIRI("urn:c"), vf.createIRI("urn:d"),
+						vf.createTripleTerm(vf.createIRI("urn:a"), RDF.TYPE,
 								vf.createIRI("urn:b"))));
 		expectedModel.add(vf.createStatement(vf.createIRI("http://example.com/s2"), vf.createIRI("urn:same"), t3));
 

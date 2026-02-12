@@ -48,7 +48,7 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
@@ -125,13 +125,13 @@ public abstract class RDFWriterTest {
 
 	private final IRI uri5;
 
-	private final Triple triple1;
+	private final TripleTerm tripleTerm1;
 
-	private final Triple triple2;
+	private final TripleTerm tripleTerm2;
 
-	private final Triple triple3;
+	private final TripleTerm tripleTerm3;
 
-	private final Triple triple4;
+	private final TripleTerm tripleTerm4;
 
 	private final Literal plainLit;
 
@@ -197,10 +197,10 @@ public abstract class RDFWriterTest {
 
 		litBigPlaceholder = vf.createLiteral(prng.nextDouble());
 
-		triple1 = vf.createTriple(uri1, uri2, plainLit);
-		triple2 = vf.createTriple(bnode, uri3, litWithMultipleNewlines);
-		triple3 = vf.createTriple(uri3, uri4, bnodeSingleLetter);
-		triple4 = vf.createTriple(uri5, uri1, uri3);
+		tripleTerm1 = vf.createTripleTerm(uri1, uri2, plainLit);
+		tripleTerm2 = vf.createTripleTerm(bnode, uri3, litWithMultipleNewlines);
+		tripleTerm3 = vf.createTripleTerm(uri3, uri4, bnodeSingleLetter);
+		tripleTerm4 = vf.createTripleTerm(uri5, uri1, uri3);
 
 		potentialSubjects = new ArrayList<>();
 		potentialSubjects.add(bnode);
@@ -237,7 +237,7 @@ public abstract class RDFWriterTest {
 		potentialObjects.add(plainLit);
 		potentialObjects.add(dtLit);
 		potentialObjects.add(langLit);
-		potentialObjects.addAll(Arrays.asList(triple1, triple2, triple2, triple3, triple4));
+		potentialObjects.addAll(Arrays.asList(tripleTerm1, tripleTerm2, tripleTerm2, tripleTerm3, tripleTerm4));
 		// FIXME: SES-879: The following break the RDF/XML parser/writer
 		// combination in terms of getting the same number of triples back as we
 		// start with
@@ -749,7 +749,7 @@ public abstract class RDFWriterTest {
 			}
 
 			IRI pred = potentialPredicates.get(prng.nextInt(potentialPredicates.size()));
-			while (obj instanceof Triple && pred.equals(RDF.TYPE)) {
+			while (obj instanceof TripleTerm && pred.equals(RDF.TYPE)) {
 				// Avoid statements "x rdf:type <<triple>>" as those use the shorter syntax in RDFXMLPrettyWriter
 				// and the writer produces invalid XML in that case. Even though the triples are encoded as
 				// valid IRIs, XML has limitations on what characters may form an XML tag name and thus a limitation
@@ -1832,14 +1832,14 @@ public abstract class RDFWriterTest {
 		BNode triple5Reifier = vf.createBNode();
 		BNode triple6Reifier = vf.createBNode();
 
-		Triple triple5 = vf.createTriple(triple1Reifier, uri3, litBigPlaceholder);
-		Triple triple6 = vf.createTriple(triple2Reifier, uri4, triple5Reifier);
+		TripleTerm tripleTerm5 = vf.createTripleTerm(triple1Reifier, uri3, litBigPlaceholder);
+		TripleTerm tripleTerm6 = vf.createTripleTerm(triple2Reifier, uri4, triple5Reifier);
 
-		model.add(vf.createStatement(triple1Reifier, RDF.REIFIES, triple1, uri4));
-		model.add(vf.createStatement(triple2Reifier, RDF.REIFIES, triple2, uri4));
-		model.add(vf.createStatement(triple3Reifier, RDF.REIFIES, triple3, uri4));
-		model.add(vf.createStatement(triple5Reifier, RDF.REIFIES, triple5, uri4));
-		model.add(vf.createStatement(triple6Reifier, RDF.REIFIES, triple6, uri4));
+		model.add(vf.createStatement(triple1Reifier, RDF.REIFIES, tripleTerm1, uri4));
+		model.add(vf.createStatement(triple2Reifier, RDF.REIFIES, tripleTerm2, uri4));
+		model.add(vf.createStatement(triple3Reifier, RDF.REIFIES, tripleTerm3, uri4));
+		model.add(vf.createStatement(triple5Reifier, RDF.REIFIES, tripleTerm5, uri4));
+		model.add(vf.createStatement(triple6Reifier, RDF.REIFIES, tripleTerm6, uri4));
 
 		model.add(vf.createStatement(triple3Reifier, uri1, triple6Reifier, uri4));
 		model.add(vf.createStatement(uri1, uri2, uri3, uri5));

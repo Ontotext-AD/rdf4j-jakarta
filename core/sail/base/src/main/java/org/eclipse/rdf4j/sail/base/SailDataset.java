@@ -21,7 +21,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.sail.SailException;
 
@@ -115,7 +115,7 @@ public interface SailDataset extends SailClosable {
 	 * @return An iterator over the relevant triples.
 	 * @throws SailException If the triple source failed to get the RDF 1.2 triples.
 	 */
-	default CloseableIteration<? extends Triple> getTriples(Resource subj, IRI pred, Value obj)
+	default CloseableIteration<? extends TripleTerm> getTriples(Resource subj, IRI pred, Value obj)
 			throws SailException {
 		throw new SailException("RDF 1.2 triple retrieval not supported by this store");
 	}

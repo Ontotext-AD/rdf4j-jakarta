@@ -25,7 +25,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
@@ -146,8 +146,8 @@ public class NTriplesWriter extends AbstractRDFWriter implements CharSink {
 			writeBNode((BNode) value);
 		} else if (value instanceof Literal) {
 			writeLiteral((Literal) value);
-		} else if (value instanceof Triple) {
-			writeTriple((Triple) value);
+		} else if (value instanceof TripleTerm) {
+			writeTriple((TripleTerm) value);
 		} else {
 			throw new IllegalArgumentException("Unknown value type: " + value.getClass());
 		}
@@ -193,7 +193,7 @@ public class NTriplesWriter extends AbstractRDFWriter implements CharSink {
 				escapeUnicode);
 	}
 
-	private void writeTriple(Triple t) throws IOException {
+	private void writeTriple(TripleTerm t) throws IOException {
 		writer.write("<<( ");
 		writeValue(t.getSubject());
 		writer.write(" ");

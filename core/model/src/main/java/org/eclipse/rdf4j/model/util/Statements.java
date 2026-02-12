@@ -21,29 +21,29 @@ import org.eclipse.rdf4j.common.annotation.Experimental;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 /**
- * Utility methods for working with {@link Statement} objects, including conversion to/from {@link Triple RDF 1.2 triple
- * objects}.
+ * Utility methods for working with {@link Statement} objects, including conversion to/from {@link TripleTerm RDF 1.2
+ * triple objects}.
  *
  * @author Jeen Broekstra
  */
 public class Statements {
 
 	/**
-	 * A {@link Function} that maps {@link Triple} to {@link org.eclipse.rdf4j.model.BNode} consistently. Multiple
-	 * invocations for the same {@link Triple} will return the same {@link org.eclipse.rdf4j.model.BNode}.
+	 * A {@link Function} that maps {@link TripleTerm} to {@link org.eclipse.rdf4j.model.BNode} consistently. Multiple
+	 * invocations for the same {@link TripleTerm} will return the same {@link org.eclipse.rdf4j.model.BNode}.
 	 * <p>
 	 * The current implementation creates a {@link org.eclipse.rdf4j.model.BNode} by encoding the string representation
-	 * of the {@link Triple} using base64 URL-safe encoding.
+	 * of the {@link TripleTerm} using base64 URL-safe encoding.
 	 */
 	@Experimental
-	public static Function<Triple, Resource> TRIPLE_BNODE_MAPPER = (t) -> SimpleValueFactory.getInstance()
+	public static Function<TripleTerm, Resource> TRIPLE_BNODE_MAPPER = (t) -> SimpleValueFactory.getInstance()
 			.createBNode(Base64.getUrlEncoder().encodeToString(t.stringValue().getBytes(StandardCharsets.UTF_8)));
 
 	/**
@@ -125,109 +125,109 @@ public class Statements {
 	}
 
 	/**
-	 * Create an {@link Triple RDF 1.2 triple} from the supplied {@link Statement}
+	 * Create an {@link TripleTerm RDF 1.2 triple} from the supplied {@link Statement}
 	 *
 	 * @param statement a statement to convert to an RDF 1.2 triple
-	 * @return an {@link Triple RDF 1.2 triple} with the same subject, predicate and object as the input statement.
+	 * @return an {@link TripleTerm RDF 1.2 triple} with the same subject, predicate and object as the input statement.
 	 * @since 3.4.0
 	 * @deprecated Use {@link Values#triple(Statement)} instead
 	 */
 	@Deprecated(since = "3.5.0")
-	public static Triple toTriple(Statement statement) {
+	public static TripleTerm toTriple(Statement statement) {
 		return toTriple(SimpleValueFactory.getInstance(), statement);
 	}
 
 	/**
-	 * Create an {@link Triple RDF 1.2 triple} from the supplied {@link Statement}
+	 * Create an {@link TripleTerm RDF 1.2 triple} from the supplied {@link Statement}
 	 *
-	 * @param vf        the {@link ValueFactory} to use for creating the {@link Triple} object.
+	 * @param vf        the {@link ValueFactory} to use for creating the {@link TripleTerm} object.
 	 * @param statement a statement to convert to an RDF 1.2 triple
-	 * @return an {@link Triple RDF 1.2 triple} with the same subject, predicate and object as the input statement.
+	 * @return an {@link TripleTerm RDF 1.2 triple} with the same subject, predicate and object as the input statement.
 	 * @since 3.4.0
 	 * @deprecated Use {@link Values#triple(ValueFactory, Statement)} instead
 	 */
 	@Deprecated(since = "3.5.0")
-	public static Triple toTriple(ValueFactory vf, Statement statement) {
-		return vf.createTriple(statement.getSubject(), statement.getPredicate(), statement.getObject());
+	public static TripleTerm toTriple(ValueFactory vf, Statement statement) {
+		return vf.createTripleTerm(statement.getSubject(), statement.getPredicate(), statement.getObject());
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple}
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm}
 	 *
-	 * @param triple an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and no context.
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and no context.
 	 * @since 3.4.0
-	 * @deprecated Use {@link #statement(Triple)} instead
+	 * @deprecated Use {@link #statement(TripleTerm)} instead
 	 */
-	public static Statement toStatement(Triple triple) {
-		return statement(triple);
+	public static Statement toStatement(TripleTerm tripleTerm) {
+		return statement(tripleTerm);
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple}
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm}
 	 *
-	 * @param triple an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and no context.
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and no context.
 	 * @since 3.4.0
 	 */
-	public static Statement statement(Triple triple) {
-		return toStatement(triple, null);
+	public static Statement statement(TripleTerm tripleTerm) {
+		return toStatement(tripleTerm, null);
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple} and context.
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm} and context.
 	 *
-	 * @param triple  an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @param context the context to assign to the {@link Statement}.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and having the
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @param context    the context to assign to the {@link Statement}.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and having the
 	 *         supplied context.
 	 * @since 3.7.0
 	 */
-	public static Statement statement(Triple triple, Resource context) {
-		return statement(SimpleValueFactory.getInstance(), triple, context);
+	public static Statement statement(TripleTerm tripleTerm, Resource context) {
+		return statement(SimpleValueFactory.getInstance(), tripleTerm, context);
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple} and context.
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm} and context.
 	 *
-	 * @param triple  an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @param context the context to assign to the {@link Statement}.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and having the
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @param context    the context to assign to the {@link Statement}.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and having the
 	 *         supplied context.
 	 * @since 3.4.0
-	 * @deprecated since 3.7.0 - use {@link #statement(Triple, Resource)} instead
+	 * @deprecated since 3.7.0 - use {@link #statement(TripleTerm, Resource)} instead
 	 */
-	public static Statement toStatement(Triple triple, Resource context) {
-		return statement(SimpleValueFactory.getInstance(), triple, context);
+	public static Statement toStatement(TripleTerm tripleTerm, Resource context) {
+		return statement(SimpleValueFactory.getInstance(), tripleTerm, context);
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple} and context.
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm} and context.
 	 *
-	 * @param vf      the {@link ValueFactory} to use for creating the {@link Statement} object.
-	 * @param triple  an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @param context the context to assign to the {@link Statement}. May be null to indicate no context.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and having the
+	 * @param vf         the {@link ValueFactory} to use for creating the {@link Statement} object.
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @param context    the context to assign to the {@link Statement}. May be null to indicate no context.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and having the
 	 *         supplied context.
 	 * @since 3.4.0
-	 * @deprecated Use {@link #statement(ValueFactory, Triple, Resource)} instead
+	 * @deprecated Use {@link #statement(ValueFactory, TripleTerm, Resource)} instead
 	 */
-	public static Statement toStatement(ValueFactory vf, Triple triple, Resource context) {
-		return statement(vf, triple, context);
+	public static Statement toStatement(ValueFactory vf, TripleTerm tripleTerm, Resource context) {
+		return statement(vf, tripleTerm, context);
 	}
 
 	/**
-	 * Create a {@link Statement} from the supplied {@link Triple RDF 1.2 triple} and context.
+	 * Create a {@link Statement} from the supplied {@link TripleTerm RDF 1.2 tripleTerm} and context.
 	 *
-	 * @param vf      the {@link ValueFactory} to use for creating the {@link Statement} object.
-	 * @param triple  an RDF 1.2 triple to convert to a {@link Statement}.
-	 * @param context the context to assign to the {@link Statement}. May be null to indicate no context.
-	 * @return an {@link Statement} with the same subject, predicate and object as the input triple, and having the
+	 * @param vf         the {@link ValueFactory} to use for creating the {@link Statement} object.
+	 * @param tripleTerm an RDF 1.2 tripleTerm to convert to a {@link Statement}.
+	 * @param context    the context to assign to the {@link Statement}. May be null to indicate no context.
+	 * @return an {@link Statement} with the same subject, predicate and object as the input tripleTerm, and having the
 	 *         supplied context.
 	 * @since 3.7.0
 	 */
-	public static Statement statement(ValueFactory vf, Triple triple, Resource context) {
-		return vf.createStatement(triple.getSubject(), triple.getPredicate(), triple.getObject(), context);
+	public static Statement statement(ValueFactory vf, TripleTerm tripleTerm, Resource context) {
+		return vf.createStatement(tripleTerm.getSubject(), tripleTerm.getPredicate(), tripleTerm.getObject(), context);
 	}
 
 	/**
@@ -315,19 +315,19 @@ public class Statements {
 		Value object = st.getObject();
 		Resource context = st.getContext();
 
-		if (object.isTriple()) {
+		if (object.isTripleTerm()) {
 			if (!predicate.equals(RDF.REIFIES)) {
 				throw new IllegalArgumentException(
-						"Cannot convert triple term statement with predicate other than rdf:reifies");
+						"Cannot convert tripleTerm term statement with predicate other than rdf:reifies");
 			}
-			Triple triple = (Triple) object;
-			if (triple.getObject().isTriple()) {
+			TripleTerm tripleTerm = (TripleTerm) object;
+			if (tripleTerm.getObject().isTripleTerm()) {
 				throw new IllegalArgumentException("Nested triples cannot be converted to RDF 1.1 reification");
 			}
 			consumer.accept(vf.createStatement(subject, RDF.TYPE, RDF.STATEMENT, context));
-			consumer.accept(vf.createStatement(subject, RDF.SUBJECT, triple.getSubject(), context));
-			consumer.accept(vf.createStatement(subject, RDF.PREDICATE, triple.getPredicate(), context));
-			consumer.accept(vf.createStatement(subject, RDF.OBJECT, triple.getObject(), context));
+			consumer.accept(vf.createStatement(subject, RDF.SUBJECT, tripleTerm.getSubject(), context));
+			consumer.accept(vf.createStatement(subject, RDF.PREDICATE, tripleTerm.getPredicate(), context));
+			consumer.accept(vf.createStatement(subject, RDF.OBJECT, tripleTerm.getObject(), context));
 		} else {
 			consumer.accept(st);
 		}

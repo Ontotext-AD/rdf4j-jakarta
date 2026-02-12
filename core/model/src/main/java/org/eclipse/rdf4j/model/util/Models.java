@@ -36,7 +36,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ModelFactory;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
@@ -921,7 +921,7 @@ public class Models {
 
 			// Statement successfully converted - add reifier to list of successfully converted reifiers
 			reifiers.add(reifier);
-			Triple t = vf.createTriple((Resource) subject, (IRI) predicate, object);
+			TripleTerm t = vf.createTripleTerm((Resource) subject, (IRI) predicate, object);
 			consumer.accept(vf.createStatement(reifier, RDF.REIFIES, t, s.getContext()));
 		});
 
@@ -957,7 +957,7 @@ public class Models {
 	 * @param vf           the {@link ValueFactory} to use for creating statements.
 	 * @param model        the {@link Model} to convert.
 	 * @param modelFactory the {@link ModelFactory} to use for creating a new Model object for the output.
-	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link Triple}s.
+	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link TripleTerm}s.
 	 */
 	@Experimental
 	public static Model convertReificationToRDF12(ValueFactory vf, Model model, ModelFactory modelFactory) {
@@ -973,7 +973,7 @@ public class Models {
 	 *
 	 * @param vf    the {@link ValueFactory} to use for creating statements.
 	 * @param model the {@link Model} to convert.
-	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link Triple}s.
+	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link TripleTerm}s.
 	 */
 	@Experimental
 	public static Model convertReificationToRDF12(ValueFactory vf, Model model) {
@@ -984,7 +984,7 @@ public class Models {
 	 * Converts the supplied RDF 1.1 reification model to a new RDF 1.2 model.
 	 *
 	 * @param model the {@link Model} to convert.
-	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link Triple}s.
+	 * @return a new {@link Model} with reification statements converted to RDF 1.2 {@link TripleTerm}s.
 	 */
 	@Experimental
 	public static Model convertReificationToRDF12(Model model) {

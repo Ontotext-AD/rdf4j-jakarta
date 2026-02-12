@@ -23,7 +23,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.base.CoreDatatype;
@@ -172,8 +172,8 @@ class TripleTermDecodingValueFactory implements ValueFactory {
 	}
 
 	@Override
-	public Triple createTriple(Resource subject,
+	public TripleTerm createTripleTerm(Resource subject,
 			IRI predicate, Value object) {
-		return delegate.createTriple(subject, predicate, object);
+		return delegate.createTripleTerm(subject, predicate, object);
 	}
 }

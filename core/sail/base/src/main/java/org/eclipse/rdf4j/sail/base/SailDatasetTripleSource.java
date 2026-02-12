@@ -22,7 +22,7 @@ import org.eclipse.rdf4j.common.order.StatementOrder;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
@@ -108,10 +108,10 @@ public class SailDatasetTripleSource implements RDFStarTripleSource {
 	}
 
 	@Override
-	public CloseableIteration<? extends Triple> getRdfStarTriples(Resource subj, IRI pred,
+	public CloseableIteration<? extends TripleTerm> getRdfStarTriples(Resource subj, IRI pred,
 			Value obj) throws QueryEvaluationException {
-		CloseableIteration<? extends Triple> triples = null;
-		TripleSourceIterationWrapper<? extends Triple> iterationWrapper = null;
+		CloseableIteration<? extends TripleTerm> triples = null;
+		TripleSourceIterationWrapper<? extends TripleTerm> iterationWrapper = null;
 		try {
 			// In contrast to statement retrieval (which gets de-duplicated later on when handling things like
 			// projections and conversions) we need to make sure we de-duplicate the triples here.

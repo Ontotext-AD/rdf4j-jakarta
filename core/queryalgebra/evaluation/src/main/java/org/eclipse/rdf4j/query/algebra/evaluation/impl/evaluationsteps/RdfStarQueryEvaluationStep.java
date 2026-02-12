@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.common.iteration.ConvertingIteration;
 import org.eclipse.rdf4j.common.iteration.FilterIteration;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MutableBindingSet;
@@ -69,13 +69,13 @@ public class RdfStarQueryEvaluationStep implements QueryEvaluationStep {
 		}
 
 		// in case the
-		CloseableIteration<? extends Triple> sourceIter = tripleSource
+		CloseableIteration<? extends TripleTerm> sourceIter = tripleSource
 				.getRdfStarTriples((Resource) subjValue, (IRI) predValue, objValue);
 
-		FilterIteration<Triple> filterIter = new FilterIteration<>(
+		FilterIteration<TripleTerm> filterIter = new FilterIteration<>(
 				sourceIter) {
 			@Override
-			protected boolean accept(Triple triple) throws QueryEvaluationException {
+			protected boolean accept(TripleTerm triple) throws QueryEvaluationException {
 				if (subjValue != null && !subjValue.equals(triple.getSubject())) {
 					return false;
 				}
@@ -99,20 +99,20 @@ public class RdfStarQueryEvaluationStep implements QueryEvaluationStep {
 
 		return new ConvertingIteration<>(filterIter) {
 			@Override
-			protected BindingSet convert(Triple triple) throws QueryEvaluationException {
+			protected BindingSet convert(TripleTerm tripleTerm) throws QueryEvaluationException {
 				MutableBindingSet result = context.createBindingSet(bindings);
 				if (subjValue == null) {
-					result.addBinding(subjVar.getName(), triple.getSubject());
+					result.addBinding(subjVar.getName(), tripleTerm.getSubject());
 				}
 				if (predValue == null) {
-					result.addBinding(predVar.getName(), triple.getPredicate());
+					result.addBinding(predVar.getName(), tripleTerm.getPredicate());
 				}
 				if (objValue == null) {
-					result.addBinding(objVar.getName(), triple.getObject());
+					result.addBinding(objVar.getName(), tripleTerm.getObject());
 				}
 				// add the extVar binding if we do not have a value bound.
 				if (extValue == null) {
-					result.addBinding(extVar.getName(), triple);
+					result.addBinding(extVar.getName(), tripleTerm);
 				}
 				return result;
 			}

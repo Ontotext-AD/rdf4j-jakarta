@@ -43,7 +43,7 @@ public class ModelReificationTestHelper {
 		// maps iri1 iri2 <<iri4 iri5 "literal1">> to RDF 1.2 reification
 		BNode t1 = VF.createBNode();
 		Statements.create(VF, IRI_1, IRI_2, t1, rdf12Model, GRAPH_1);
-		Statements.create(VF, t1, RDF.REIFIES, VF.createTriple(IRI_4, IRI_5, LITERAL_1), rdf12Model, GRAPH_1);
+		Statements.create(VF, t1, RDF.REIFIES, VF.createTripleTerm(IRI_4, IRI_5, LITERAL_1), rdf12Model, GRAPH_1);
 
 		// maps iri1 iri3 <<iri4 iri5 "literal1">> to reification
 		// same triple/reification statements as previous entry
@@ -52,7 +52,7 @@ public class ModelReificationTestHelper {
 		// maps <<iri5 iri6 iri4>> iri3 _:bnode1 to reification
 		BNode t2 = VF.createBNode();
 		Statements.create(VF, t2, IRI_3, BNODE_1, rdf12Model, GRAPH_2);
-		Statements.create(VF, t2, RDF.REIFIES, VF.createTriple(IRI_5, IRI_6, IRI_4), rdf12Model, GRAPH_2);
+		Statements.create(VF, t2, RDF.REIFIES, VF.createTripleTerm(IRI_5, IRI_6, IRI_4), rdf12Model, GRAPH_2);
 
 		// maps a complex nested statement to reification
 		// subj: << <<iri1 iri2 "literal2>> iri3 <<iri4 iri5 iri6>> >>
@@ -65,12 +65,12 @@ public class ModelReificationTestHelper {
 		BNode t7 = VF.createBNode();
 		BNode t8 = VF.createBNode();
 		Statements.create(VF, t3, IRI_2, t4, rdf12Model, GRAPH_2);
-		Statements.create(VF, t3, RDF.REIFIES, VF.createTriple(t5, IRI_3, t6), rdf12Model, GRAPH_2);
-		Statements.create(VF, t4, RDF.REIFIES, VF.createTriple(t7, IRI_4, t8), rdf12Model, GRAPH_2);
-		Statements.create(VF, t5, RDF.REIFIES, VF.createTriple(IRI_1, IRI_2, LITERAL_2), rdf12Model, GRAPH_2);
-		Statements.create(VF, t6, RDF.REIFIES, VF.createTriple(IRI_4, IRI_5, IRI_6), rdf12Model, GRAPH_2);
-		Statements.create(VF, t7, RDF.REIFIES, VF.createTriple(BNODE_2, IRI_3, LITERAL_2), rdf12Model, GRAPH_2);
-		Statements.create(VF, t8, RDF.REIFIES, VF.createTriple(IRI_3, IRI_6, IRI_1), rdf12Model, GRAPH_2);
+		Statements.create(VF, t3, RDF.REIFIES, VF.createTripleTerm(t5, IRI_3, t6), rdf12Model, GRAPH_2);
+		Statements.create(VF, t4, RDF.REIFIES, VF.createTripleTerm(t7, IRI_4, t8), rdf12Model, GRAPH_2);
+		Statements.create(VF, t5, RDF.REIFIES, VF.createTripleTerm(IRI_1, IRI_2, LITERAL_2), rdf12Model, GRAPH_2);
+		Statements.create(VF, t6, RDF.REIFIES, VF.createTripleTerm(IRI_4, IRI_5, IRI_6), rdf12Model, GRAPH_2);
+		Statements.create(VF, t7, RDF.REIFIES, VF.createTripleTerm(BNODE_2, IRI_3, LITERAL_2), rdf12Model, GRAPH_2);
+		Statements.create(VF, t8, RDF.REIFIES, VF.createTripleTerm(IRI_3, IRI_6, IRI_1), rdf12Model, GRAPH_2);
 
 		return rdf12Model;
 	}

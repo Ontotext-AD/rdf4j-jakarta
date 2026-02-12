@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.algebra.BindingSetAssignment;
 import org.eclipse.rdf4j.query.algebra.Count;
@@ -150,16 +150,16 @@ public class TestSparqlStarParser {
 		values.getBindingSets().forEach(bs -> {
 			Value v = bs.getValue("ref");
 			assertTrue(v != null, "expect binding for ref");
-			assertTrue(v instanceof Triple, "expect Triple ");
-			Triple triple = (Triple) v;
-			assertTrue(triple.getSubject() instanceof IRI, "subject should be IRI");
-			assertEquals("urn:A", triple.getSubject().toString(), "subject should match");
+			assertTrue(v instanceof TripleTerm, "expect TripleTerm ");
+			TripleTerm tripleTerm = (TripleTerm) v;
+			assertTrue(tripleTerm.getSubject() instanceof IRI, "subject should be IRI");
+			assertEquals("urn:A", tripleTerm.getSubject().toString(), "subject should match");
 
-			assertTrue(triple.getPredicate() instanceof IRI, "predicate should be IRI");
-			assertEquals("urn:B", triple.getPredicate().toString(), "predicate should match");
+			assertTrue(tripleTerm.getPredicate() instanceof IRI, "predicate should be IRI");
+			assertEquals("urn:B", tripleTerm.getPredicate().toString(), "predicate should match");
 
-			assertTrue(triple.getObject() instanceof Literal, "object should be Literal");
-			assertEquals(1, ((Literal) triple.getObject()).intValue(), "object should match");
+			assertTrue(tripleTerm.getObject() instanceof Literal, "object should be Literal");
+			assertEquals(1, ((Literal) tripleTerm.getObject()).intValue(), "object should match");
 
 			assertTrue(oneValue[0] == false, "expect one value");
 			oneValue[0] = true;

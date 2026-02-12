@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.QueryResultHandlerException;
 import org.eclipse.rdf4j.query.resultio.TupleQueryResultFormat;
@@ -54,7 +54,7 @@ public class SPARQLResultsJSONWriter extends AbstractSPARQLJSONWriter implements
 
 	@Override
 	protected void writeValue(Value value) throws IOException, QueryResultHandlerException {
-		if (value instanceof Triple) {
+		if (value instanceof TripleTerm) {
 			jg.writeStartObject();
 
 			jg.writeStringField(AbstractSPARQLJSONParser.TYPE, SPARQLStarResultsJSONConstants.TRIPLE);
@@ -62,13 +62,13 @@ public class SPARQLResultsJSONWriter extends AbstractSPARQLJSONWriter implements
 			jg.writeObjectFieldStart(AbstractSPARQLJSONParser.VALUE);
 
 			jg.writeFieldName(SPARQLStarResultsJSONConstants.SUBJECT);
-			writeValue(((Triple) value).getSubject());
+			writeValue(((TripleTerm) value).getSubject());
 
 			jg.writeFieldName(SPARQLStarResultsJSONConstants.PREDICATE);
-			writeValue(((Triple) value).getPredicate());
+			writeValue(((TripleTerm) value).getPredicate());
 
 			jg.writeFieldName(SPARQLStarResultsJSONConstants.OBJECT);
-			writeValue(((Triple) value).getObject());
+			writeValue(((TripleTerm) value).getObject());
 
 			jg.writeEndObject();
 

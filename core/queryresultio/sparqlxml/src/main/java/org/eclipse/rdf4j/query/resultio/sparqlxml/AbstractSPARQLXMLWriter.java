@@ -50,7 +50,7 @@ import org.eclipse.rdf4j.common.xml.XMLWriter;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Literals;
 import org.eclipse.rdf4j.model.vocabulary.SESAMEQNAME;
@@ -396,8 +396,8 @@ abstract class AbstractSPARQLXMLWriter extends AbstractQueryResultWriter impleme
 	}
 
 	private void writeValue(Value value) throws IOException {
-		if (value instanceof Triple) {
-			writeTriple((Triple) value);
+		if (value instanceof TripleTerm) {
+			writeTripleTerm((TripleTerm) value);
 		} else if (value instanceof IRI) {
 			writeURI((IRI) value);
 		} else if (value instanceof BNode) {
@@ -411,16 +411,16 @@ abstract class AbstractSPARQLXMLWriter extends AbstractQueryResultWriter impleme
 		return namespaceTable.containsKey(nextUri.getNamespace());
 	}
 
-	private void writeTriple(Triple triple) throws IOException {
+	private void writeTripleTerm(TripleTerm tripleTerm) throws IOException {
 		xmlWriter.startTag(TRIPLE_TAG);
 		xmlWriter.startTag(SUBJECT_TAG);
-		writeValue(triple.getSubject());
+		writeValue(tripleTerm.getSubject());
 		xmlWriter.endTag(SUBJECT_TAG);
 		xmlWriter.startTag(PREDICATE_TAG);
-		writeValue(triple.getPredicate());
+		writeValue(tripleTerm.getPredicate());
 		xmlWriter.endTag(PREDICATE_TAG);
 		xmlWriter.startTag(OBJECT_TAG);
-		writeValue(triple.getObject());
+		writeValue(tripleTerm.getObject());
 		xmlWriter.endTag(OBJECT_TAG);
 		xmlWriter.endTag(TRIPLE_TAG);
 	}

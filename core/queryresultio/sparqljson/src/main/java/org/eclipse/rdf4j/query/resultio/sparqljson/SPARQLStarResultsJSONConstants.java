@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.query.resultio.sparqljson;
 
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.query.resultio.TupleQueryResultFormat;
 
 /**
@@ -56,7 +57,7 @@ final class SPARQLStarResultsJSONConstants {
 	static TupleQueryResultFormat QUERY_RESULT_FORMAT = TupleQueryResultFormat.JSON_STAR;
 
 	/**
-	 * Type string for serialized {@link org.eclipse.rdf4j.model.Triple} value.
+	 * Type string for serialized {@link TripleTerm} value.
 	 */
 	static final String TRIPLE = "triple";
 
@@ -76,7 +77,7 @@ final class SPARQLStarResultsJSONConstants {
 	static final String OBJECT = "o";
 
 	/**
-	 * Type string for serialized {@link org.eclipse.rdf4j.model.Triple} value - Stardog dialect
+	 * Type string for serialized {@link TripleTerm} value - Stardog dialect
 	 */
 	final static String TRIPLE_STARDOG = "statement";
 

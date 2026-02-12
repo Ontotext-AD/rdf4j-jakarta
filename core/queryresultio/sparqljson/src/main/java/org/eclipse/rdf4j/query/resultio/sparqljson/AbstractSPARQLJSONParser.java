@@ -26,7 +26,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -334,7 +334,7 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 		String datatype = null;
 		String value = null;
 
-		Triple triple = null;
+		TripleTerm tripleTerm = null;
 
 		while (jp.nextToken() != JsonToken.END_OBJECT) {
 			if (jp.getCurrentToken() != JsonToken.FIELD_NAME) {
@@ -349,8 +349,8 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 			if (TYPE.equals(fieldName)) {
 				type = jp.nextTextValue();
 				if (TRIPLE_STARDOG.equals(type)) {
-					// Stardog RDF-star serialization dialect does not wrap the triple in a value object
-					triple = parseStardogTripleValue(jp, type);
+					// Stardog RDF-star serialization dialect does not wrap the tripleTerm in a value object
+					tripleTerm = parseStardogTripleValue(jp, type);
 					// avoid reading away the next end-of-object token by jumping out of the loop.
 					break;
 				}
@@ -360,7 +360,7 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 				datatype = jp.nextTextValue();
 			} else if (VALUE.equals(fieldName)) {
 				if (jp.nextToken() == JsonToken.START_OBJECT) {
-					triple = parseTripleValue(jp, fieldName);
+					tripleTerm = parseTripleTermValue(jp, fieldName);
 					if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
 						throw new QueryResultParseException("Unexpected token: " + jp.getCurrentName(),
 								jp.getCurrentLocation().getLineNr(),
@@ -376,14 +376,14 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 
 			}
 		}
-		if (triple != null && checkTripleType(jp, type)) {
-			return triple;
+		if (tripleTerm != null && checkTripleType(jp, type)) {
+			return tripleTerm;
 		}
 
 		return parseValue(type, value, lang, datatype);
 	}
 
-	private Triple parseStardogTripleValue(JsonParser jp, String fieldName) throws IOException {
+	private TripleTerm parseStardogTripleValue(JsonParser jp, String fieldName) throws IOException {
 		Value subject = null, predicate = null, object = null;
 
 		while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -428,7 +428,7 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 		}
 
 		if (subject instanceof Resource && predicate instanceof IRI && object != null) {
-			return valueFactory.createTriple((Resource) subject, (IRI) predicate, object);
+			return valueFactory.createTripleTerm((Resource) subject, (IRI) predicate, object);
 		} else {
 			throw new QueryResultParseException("Incomplete or invalid triple value",
 					jp.getCurrentLocation().getLineNr(),
@@ -436,7 +436,7 @@ public abstract class AbstractSPARQLJSONParser extends AbstractQueryResultParser
 		}
 	}
 
-	protected Triple parseTripleValue(JsonParser jp, String fieldName) throws IOException {
+	protected TripleTerm parseTripleTermValue(JsonParser jp, String fieldName) throws IOException {
 		throw new QueryResultParseException("Unexpected object as value", jp.getCurrentLocation().getLineNr(),
 				jp.getCurrentLocation().getColumnNr());
 	}

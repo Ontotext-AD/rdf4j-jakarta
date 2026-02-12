@@ -295,8 +295,9 @@ public class TriGParserCustomTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(2);
 
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, vf.createTriple(vf.createIRI("http://example/s"),
-					vf.createIRI("http://example/p"), vf.createIRI("http://example/o")));
+			Model reifyingTriples = model.filter(null, RDF.REIFIES,
+					vf.createTripleTerm(vf.createIRI("http://example/s"),
+							vf.createIRI("http://example/p"), vf.createIRI("http://example/o")));
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);
@@ -321,8 +322,9 @@ public class TriGParserCustomTest extends AbstractParserTest {
 
 			assertThat(model).hasSize(1);
 
-			Model reifyingTriples = model.filter(null, RDF.REIFIES, vf.createTriple(vf.createIRI("http://example/s"),
-					vf.createIRI("http://example/p"), vf.createIRI("http://example/o")));
+			Model reifyingTriples = model.filter(null, RDF.REIFIES,
+					vf.createTripleTerm(vf.createIRI("http://example/s"),
+							vf.createIRI("http://example/p"), vf.createIRI("http://example/o")));
 			assertThat(reifyingTriples).hasSize(1);
 			Resource reifier = Models.subject(reifyingTriples).get();
 			assertInstanceOf(BNode.class, reifier);

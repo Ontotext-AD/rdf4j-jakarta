@@ -24,7 +24,7 @@ import java.io.InputStream;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
@@ -303,8 +303,8 @@ public class SPARQLJSONTupleTest extends AbstractQueryResultIOTupleTest {
 		parser.parseQueryResult(stream);
 
 		assertThat(handler.getBindingNames().size()).isEqualTo(3);
-		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof Triple);
-		Triple a = (Triple) handler.getBindingSets().get(0).getValue("a");
+		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof TripleTerm);
+		TripleTerm a = (TripleTerm) handler.getBindingSets().get(0).getValue("a");
 		assertThat(a.getSubject().stringValue()).isEqualTo("http://example.org/bob");
 		assertThat(a.getPredicate().stringValue()).isEqualTo("http://xmlns.com/foaf/0.1/age");
 		assertThat(a.getObject().stringValue()).isEqualTo("23");
@@ -350,8 +350,8 @@ public class SPARQLJSONTupleTest extends AbstractQueryResultIOTupleTest {
 		parser.parseQueryResult(stream);
 
 		assertThat(handler.getBindingNames().size()).isEqualTo(3);
-		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof Triple);
-		Triple a = (Triple) handler.getBindingSets().get(0).getValue("a");
+		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof TripleTerm);
+		TripleTerm a = (TripleTerm) handler.getBindingSets().get(0).getValue("a");
 		assertThat(a.getSubject().stringValue()).isEqualTo("http://example.org/bob");
 		assertThat(a.getPredicate().stringValue()).isEqualTo("http://xmlns.com/foaf/0.1/age");
 		assertThat(a.getObject().stringValue()).isEqualTo("23");
@@ -370,8 +370,8 @@ public class SPARQLJSONTupleTest extends AbstractQueryResultIOTupleTest {
 		parser.parseQueryResult(stream);
 
 		assertThat(handler.getBindingNames().size()).isEqualTo(3);
-		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof Triple);
-		Triple a = (Triple) handler.getBindingSets().get(0).getValue("a");
+		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof TripleTerm);
+		TripleTerm a = (TripleTerm) handler.getBindingSets().get(0).getValue("a");
 		assertThat(a.getSubject().stringValue()).isEqualTo("http://example.org/bob");
 		assertThat(a.getPredicate().stringValue()).isEqualTo("http://xmlns.com/foaf/0.1/age");
 		assertThat(a.getObject().stringValue()).isEqualTo("23");
@@ -389,8 +389,8 @@ public class SPARQLJSONTupleTest extends AbstractQueryResultIOTupleTest {
 		parser.parseQueryResult(stream);
 
 		assertThat(handler.getBindingNames().size()).isEqualTo(3);
-		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof Triple);
-		Triple a = (Triple) handler.getBindingSets().get(0).getValue("a");
+		assertThat(handler.getBindingSets()).hasSize(1).allMatch(bs -> bs.getValue("a") instanceof TripleTerm);
+		TripleTerm a = (TripleTerm) handler.getBindingSets().get(0).getValue("a");
 		assertThat(a.getSubject().stringValue()).isEqualTo("http://example.org/bob");
 		assertThat(a.getPredicate().stringValue()).isEqualTo("http://xmlns.com/foaf/0.1/age");
 		assertThat(a.getObject().stringValue()).isEqualTo("23");

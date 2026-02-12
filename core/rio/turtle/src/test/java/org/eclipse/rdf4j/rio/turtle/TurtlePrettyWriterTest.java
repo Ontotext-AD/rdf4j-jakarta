@@ -152,7 +152,7 @@ public class TurtlePrettyWriterTest extends AbstractTurtleWriterTest {
 	public void testVersionAnnouncementWithBufferingTripleTerm() {
 		Model model = new DynamicModelFactory().createEmptyModel();
 		model.add(vf.createIRI("http://example.com/s"), vf.createIRI("http://example.com/p"), vf.createLiteral("o"));
-		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTriple(vf.createBNode("b2"),
+		model.add(vf.createBNode("b"), RDF.REIFIES, vf.createTripleTerm(vf.createBNode("b2"),
 				vf.createIRI("http://example.com/p"), vf.createLiteral("literal")));
 		StringWriter stringWriter = new StringWriter();
 		// pretty printing means that buffering is used

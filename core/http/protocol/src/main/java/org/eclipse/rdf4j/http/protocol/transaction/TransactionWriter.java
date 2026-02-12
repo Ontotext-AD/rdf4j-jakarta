@@ -30,7 +30,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Literals;
 import org.eclipse.rdf4j.query.Binding;
@@ -242,8 +242,6 @@ public class TransactionWriter {
 			serialize((Resource) value, xmlWriter);
 		} else if (value instanceof Literal) {
 			serialize((Literal) value, xmlWriter);
-		} else if (value instanceof Triple) {
-			serialize((Triple) value, xmlWriter);
 		} else if (value == null) {
 			serializeNull(xmlWriter);
 		} else {
@@ -256,6 +254,8 @@ public class TransactionWriter {
 			serialize((IRI) resource, xmlWriter);
 		} else if (resource instanceof BNode) {
 			serialize((BNode) resource, xmlWriter);
+		} else if (resource instanceof TripleTerm) {
+			serialize((TripleTerm) resource, xmlWriter);
 		} else if (resource == null) {
 			serializeNull(xmlWriter);
 		} else {
@@ -311,9 +311,9 @@ public class TransactionWriter {
 		xmlWriter.emptyElement(TransactionXMLConstants.NULL_TAG);
 	}
 
-	protected void serialize(Triple triple, XMLWriter xmlWriter) throws IOException {
-		if (triple != null) {
-			Value convertBase64 = TripleTermUtil.toRDFEncodedValue(triple);
+	protected void serialize(TripleTerm tripleTerm, XMLWriter xmlWriter) throws IOException {
+		if (tripleTerm != null) {
+			Value convertBase64 = TripleTermUtil.toRDFEncodedValue(tripleTerm);
 			xmlWriter.textElement(TransactionXMLConstants.TRIPLE_TAG, convertBase64.stringValue());
 		} else {
 			serializeNull(xmlWriter);

@@ -20,7 +20,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.util.Literals;
@@ -56,11 +56,11 @@ public class NTriplesUtil {
 	private static final Pattern LITERAL_PATTERN = Pattern.compile(LITERAL);
 
 	static class TripleMatch {
-		Triple triple;
+		TripleTerm tripleTerm;
 		int length;
 
-		TripleMatch(Triple triple, int length) {
-			this.triple = triple;
+		TripleMatch(TripleTerm tripleTerm, int length) {
+			this.tripleTerm = tripleTerm;
 			this.length = length;
 		}
 	}
@@ -97,7 +97,9 @@ public class NTriplesUtil {
 	 */
 	public static Resource parseResource(String nTriplesResource, ValueFactory valueFactory)
 			throws IllegalArgumentException {
-		if (nTriplesResource.startsWith("<")) {
+		if (nTriplesResource.startsWith("<<")) {
+			return parseTriple(nTriplesResource, valueFactory);
+		} else if (nTriplesResource.startsWith("<")) {
 			return parseURI(nTriplesResource, valueFactory);
 		} else if (nTriplesResource.startsWith("_:")) {
 			return parseBNode(nTriplesResource, valueFactory);
@@ -191,25 +193,25 @@ public class NTriplesUtil {
 	 *
 	 * @param nTriplesTriple The triple term to parse.
 	 * @param valueFactory   The ValueFactory to use for creating the object.
-	 * @return An object representing the parsed triple.
-	 * @throws IllegalArgumentException If the supplied triple could not be parsed correctly.
+	 * @return An object representing the parsed tripleTerm.
+	 * @throws IllegalArgumentException If the supplied tripleTerm could not be parsed correctly.
 	 */
-	public static Triple parseTriple(String nTriplesTriple, ValueFactory valueFactory) {
+	public static TripleTerm parseTriple(String nTriplesTriple, ValueFactory valueFactory) {
 		TripleMatch tm = parseTripleInternal(nTriplesTriple, valueFactory);
 		if (tm.length != nTriplesTriple.length()) {
-			throw new IllegalArgumentException("Not a valid N-Triples triple: " + nTriplesTriple);
+			throw new IllegalArgumentException("Not a valid N-Triples tripleTerm: " + nTriplesTriple);
 		}
-		return tm.triple;
+		return tm.tripleTerm;
 	}
 
 	/**
 	 * Parses a triple term, creates an object for it using the supplied ValueFactory and returns an object that
 	 * contains the parsed triple and the length of the parsed text.
 	 *
-	 * @param nTriplesTriple The triple to parse.
+	 * @param nTriplesTriple The tripleTerm to parse.
 	 * @param valueFactory   The ValueFactory to use for creating the object.
-	 * @return An object representing the parsed triple and the length of the matching text.
-	 * @throws IllegalArgumentException If the supplied triple could not be parsed correctly.
+	 * @return An object representing the parsed tripleTerm and the length of the matching text.
+	 * @throws IllegalArgumentException If the supplied tripleTerm could not be parsed correctly.
 	 */
 	private static TripleMatch parseTripleInternal(String nTriplesTriple, ValueFactory valueFactory) {
 		if (nTriplesTriple.startsWith("<<(")) {
@@ -239,7 +241,7 @@ public class NTriplesUtil {
 					TripleMatch tm = parseTripleInternal(triple, valueFactory);
 					triple = triple.substring(tm.length);
 					offset += tm.length;
-					v = tm.triple;
+					v = tm.tripleTerm;
 				} else if (triple.startsWith("<")) {
 					Matcher iriMatcher = IRI_PATTERN.matcher(triple);
 					if (iriMatcher.find() && iriMatcher.start() == 0) {
@@ -282,7 +284,7 @@ public class NTriplesUtil {
 
 			if (triple.endsWith(")>>")) {
 				offset += 3;
-				return new TripleMatch(valueFactory.createTriple(subject, predicate, object), offset);
+				return new TripleMatch(valueFactory.createTripleTerm(subject, predicate, object), offset);
 			}
 		}
 
@@ -344,8 +346,6 @@ public class NTriplesUtil {
 			return toNTriplesString((Resource) value);
 		} else if (value instanceof Literal) {
 			return toNTriplesString((Literal) value, xsdStringToPlainLiteral);
-		} else if (value instanceof Triple) {
-			return toNTriplesString((Triple) value);
 		} else {
 			throw new IllegalArgumentException("Unknown value type: " + value.getClass());
 		}
@@ -382,8 +382,6 @@ public class NTriplesUtil {
 			append((Resource) value, appendable);
 		} else if (value instanceof Literal) {
 			append((Literal) value, appendable, xsdStringToPlainLiteral, escapeUnicode);
-		} else if (value instanceof Triple) {
-			append((Triple) value, appendable);
 		} else {
 			throw new IllegalArgumentException("Unknown value type: " + value.getClass());
 		}
@@ -400,6 +398,8 @@ public class NTriplesUtil {
 			return toNTriplesString((IRI) resource);
 		} else if (resource instanceof BNode) {
 			return toNTriplesString((BNode) resource);
+		} else if (resource instanceof TripleTerm) {
+			return toNTriplesString((TripleTerm) resource);
 		} else {
 			throw new IllegalArgumentException("Unknown resource type: " + resource.getClass());
 		}
@@ -417,6 +417,8 @@ public class NTriplesUtil {
 			append((IRI) resource, appendable);
 		} else if (resource instanceof BNode) {
 			append((BNode) resource, appendable);
+		} else if (resource instanceof TripleTerm) {
+			append((TripleTerm) resource, appendable);
 		} else {
 			throw new IllegalArgumentException("Unknown resource type: " + resource.getClass());
 		}
@@ -577,31 +579,32 @@ public class NTriplesUtil {
 	}
 
 	/**
-	 * Creates an N-Triples string for the supplied triple.
+	 * Creates an N-Triples string for the supplied tripleTerm.
 	 *
-	 * @param triple
+	 * @param tripleTerm
 	 * @return string
 	 */
-	public static String toNTriplesString(Triple triple) {
-		return "<<( " + NTriplesUtil.toNTriplesString(triple.getSubject()) + " "
-				+ NTriplesUtil.toNTriplesString(triple.getPredicate()) + " "
-				+ NTriplesUtil.toNTriplesString(triple.getObject()) + " )>>";
+	public static String toNTriplesString(TripleTerm tripleTerm) {
+		return "<<( " + NTriplesUtil.toNTriplesString(tripleTerm.getSubject()) + " "
+				+ NTriplesUtil.toNTriplesString(tripleTerm.getPredicate()) + " "
+				+ NTriplesUtil.toNTriplesString(tripleTerm.getObject()) + " )>>";
 	}
 
 	/**
-	 * Appends the N-Triples (non-standard) representation of the given {@link Triple} to the given {@link Appendable}.
+	 * Appends the N-Triples (non-standard) representation of the given {@link TripleTerm} to the given
+	 * {@link Appendable}.
 	 *
-	 * @param triple
+	 * @param tripleTerm
 	 * @param appendable
 	 * @throws IOException
 	 */
-	public static void append(Triple triple, Appendable appendable) throws IOException {
+	public static void append(TripleTerm tripleTerm, Appendable appendable) throws IOException {
 		appendable.append("<<( ");
-		append(triple.getSubject(), appendable);
+		append(tripleTerm.getSubject(), appendable);
 		appendable.append(' ');
-		append(triple.getPredicate(), appendable);
+		append(tripleTerm.getPredicate(), appendable);
 		appendable.append(' ');
-		append(triple.getObject(), appendable);
+		append(tripleTerm.getObject(), appendable);
 		appendable.append(" )>>");
 	}
 

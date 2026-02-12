@@ -13,14 +13,14 @@ package org.eclipse.rdf4j.query.algebra.evaluation;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 
 public interface RDFStarTripleSource extends TripleSource {
 	/**
-	 * Gets all Triple nodes that have a specific subject, predicate and/or object. All three parameters may be null to
-	 * indicate wildcards.
+	 * Gets all TripleTerm nodes that have a specific subject, predicate and/or object. All three parameters may be null
+	 * to indicate wildcards.
 	 *
 	 * @param subj A Resource specifying the triple's subject, or <var>null</var> for a wildcard.
 	 * @param pred A IRI specifying the triple's predicate, or <var>null</var> for a wildcard.
@@ -28,7 +28,7 @@ public interface RDFStarTripleSource extends TripleSource {
 	 * @return An iterator over the relevant triples.
 	 * @throws QueryEvaluationException If the rdf star triple source failed to get the statements.
 	 */
-	CloseableIteration<? extends Triple> getRdfStarTriples(Resource subj, IRI pred,
+	CloseableIteration<? extends TripleTerm> getRdfStarTriples(Resource subj, IRI pred,
 			Value obj) throws QueryEvaluationException;
 
 }

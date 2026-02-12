@@ -501,7 +501,7 @@ public abstract class AbstractNTriplesParserUnitTest extends AbstractParserTest 
 		parser.parse(new StringReader(data));
 
 		assertEquals(1, model.size());
-		assertEquals(vf.createTriple(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
+		assertEquals(vf.createTripleTerm(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
 				vf.createIRI("http://example/c")), Models.object(model).get());
 	}
 
@@ -511,7 +511,7 @@ public abstract class AbstractNTriplesParserUnitTest extends AbstractParserTest 
 		parser.parse(new StringReader(data));
 
 		assertEquals(1, model.size());
-		assertEquals(vf.createTriple(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
+		assertEquals(vf.createTripleTerm(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
 				vf.createIRI("http://example/c")), Models.object(model).get());
 	}
 

@@ -58,7 +58,7 @@ public abstract class AbstractTriGWriterTest extends RDFWriterTest {
 	public void testVersionAnnouncementWithBufferingTripleTerm() {
 		Model model = new DynamicModelFactory().createEmptyModel();
 		model.add(
-				vf.createBNode("b"), RDF.REIFIES, vf.createTriple(vf.createBNode("b2"),
+				vf.createBNode("b"), RDF.REIFIES, vf.createTripleTerm(vf.createBNode("b2"),
 						vf.createIRI("http://example.com/p"), vf.createLiteral("literal")),
 				vf.createIRI("http://example.org/graph"));
 		StringWriter stringWriter = new StringWriter();
@@ -86,7 +86,7 @@ public abstract class AbstractTriGWriterTest extends RDFWriterTest {
 	public void testVersionAnnouncementNoBufferingTripleTerm() {
 		Model model = new DynamicModelFactory().createEmptyModel();
 		model.add(
-				vf.createBNode("b"), RDF.REIFIES, vf.createTriple(vf.createBNode("b2"),
+				vf.createBNode("b"), RDF.REIFIES, vf.createTripleTerm(vf.createBNode("b2"),
 						vf.createIRI("http://example.com/p"), vf.createLiteral("literal")),
 				vf.createIRI("http://example.org/graph"));
 		StringWriter stringWriter = new StringWriter();

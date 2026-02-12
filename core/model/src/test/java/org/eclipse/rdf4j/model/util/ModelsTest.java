@@ -138,21 +138,21 @@ public class ModelsTest {
 
 	@Test
 	public void testModelsIsomorphic_TripleTerms_SingleContext() {
-		model1.add(VF.createBNode("X"), RDF.REIFIES, VF.createTriple(VF.createBNode("a"), RDF.TYPE, bar), foo);
-		model2.add(VF.createBNode("Y"), RDF.REIFIES, VF.createTriple(VF.createBNode("b"), RDF.TYPE, bar), foo);
+		model1.add(VF.createBNode("X"), RDF.REIFIES, VF.createTripleTerm(VF.createBNode("a"), RDF.TYPE, bar), foo);
+		model2.add(VF.createBNode("Y"), RDF.REIFIES, VF.createTripleTerm(VF.createBNode("b"), RDF.TYPE, bar), foo);
 
 		assertTrue(Models.isomorphic(model1, model2));
 	}
 
 	@Test
 	public void testModelsIsomorphic_TripleTerms_MultipleContexts() {
-		model1.add(VF.createBNode("X"), RDF.REIFIES, VF.createTriple(VF.createBNode("a"), RDF.TYPE, bar), foo);
-		model2.add(VF.createBNode("Y"), RDF.REIFIES, VF.createTriple(VF.createBNode("b"), RDF.TYPE, bar), foo);
+		model1.add(VF.createBNode("X"), RDF.REIFIES, VF.createTripleTerm(VF.createBNode("a"), RDF.TYPE, bar), foo);
+		model2.add(VF.createBNode("Y"), RDF.REIFIES, VF.createTripleTerm(VF.createBNode("b"), RDF.TYPE, bar), foo);
 
 		model1.add(VF.createBNode("Z"), RDF.REIFIES,
-				VF.createTriple(VF.createBNode("A"), RDF.ALT, VF.createLiteral("some text")), bar);
+				VF.createTripleTerm(VF.createBNode("A"), RDF.ALT, VF.createLiteral("some text")), bar);
 		model2.add(VF.createBNode("W"), RDF.REIFIES,
-				VF.createTriple(VF.createBNode("B"), RDF.ALT, VF.createLiteral("some text")), bar);
+				VF.createTripleTerm(VF.createBNode("B"), RDF.ALT, VF.createLiteral("some text")), bar);
 
 		assertTrue(Models.isomorphic(model1, model2));
 	}

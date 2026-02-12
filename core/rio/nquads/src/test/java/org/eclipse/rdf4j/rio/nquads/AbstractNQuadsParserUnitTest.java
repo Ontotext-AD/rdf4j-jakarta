@@ -616,7 +616,7 @@ public abstract class AbstractNQuadsParserUnitTest extends AbstractParserTest {
 
 		assertEquals(1, statementCollector.getStatements().size());
 		assertEquals(
-				vf.createTriple(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
+				vf.createTripleTerm(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
 						vf.createIRI("http://example/c")),
 				statementCollector.getStatements().iterator().next().getObject());
 	}
@@ -628,7 +628,7 @@ public abstract class AbstractNQuadsParserUnitTest extends AbstractParserTest {
 
 		assertEquals(1, statementCollector.getStatements().size());
 		assertEquals(
-				vf.createTriple(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
+				vf.createTripleTerm(vf.createIRI("http://example/a"), vf.createIRI("http://example/b"),
 						vf.createIRI("http://example/c")),
 				statementCollector.getStatements().iterator().next().getObject());
 	}

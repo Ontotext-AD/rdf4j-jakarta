@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.QueryResultHandlerException;
@@ -91,7 +91,7 @@ public class SPARQLResultsJSONParser extends AbstractSPARQLJSONParser implements
 	}
 
 	@Override
-	protected Triple parseTripleValue(JsonParser jp, String fieldName) throws IOException {
+	protected TripleTerm parseTripleTermValue(JsonParser jp, String fieldName) throws IOException {
 		Value subject = null, predicate = null, object = null;
 
 		while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -136,7 +136,7 @@ public class SPARQLResultsJSONParser extends AbstractSPARQLJSONParser implements
 		}
 
 		if (subject instanceof Resource && predicate instanceof IRI && object != null) {
-			return valueFactory.createTriple((Resource) subject, (IRI) predicate, object);
+			return valueFactory.createTripleTerm((Resource) subject, (IRI) predicate, object);
 		} else {
 			throw new QueryResultParseException("Incomplete or invalid triple value",
 					jp.getCurrentLocation().getLineNr(),

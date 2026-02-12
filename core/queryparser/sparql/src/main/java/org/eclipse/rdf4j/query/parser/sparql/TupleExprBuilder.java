@@ -25,7 +25,7 @@ import org.eclipse.rdf4j.common.annotation.InternalUseOnly;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.BooleanLiteral;
@@ -2700,18 +2700,18 @@ public class TupleExprBuilder extends AbstractASTVisitor {
 
 	@Override
 	public ValueConstant visit(ASTConstTripleRef node, Object data) throws VisitorException {
-		Triple triple;
+		TripleTerm tripleTerm;
 		Resource subject = (Resource) ((ValueConstant) node.getSubj().jjtAccept(this, data)).getValue();
 		IRI predicate = (IRI) ((ValueConstant) node.getPred().jjtAccept(this, data)).getValue();
 		Value object = ((ValueConstant) node.getObj().jjtAccept(this, data)).getValue();
 		try {
-			triple = valueFactory.createTriple(subject, predicate, object);
+			tripleTerm = valueFactory.createTripleTerm(subject, predicate, object);
 		} catch (IllegalArgumentException e) {
 			// invalid URI
 			throw new VisitorException(e.getMessage());
 		}
 
-		return new ValueConstant(triple);
+		return new ValueConstant(tripleTerm);
 	}
 
 	/**

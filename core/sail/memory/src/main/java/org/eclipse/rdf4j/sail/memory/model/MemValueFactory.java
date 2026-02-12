@@ -16,7 +16,7 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.base.AbstractValueFactory;
 import org.eclipse.rdf4j.model.base.CoreDatatype;
@@ -45,10 +45,10 @@ public class MemValueFactory extends AbstractValueFactory {
 	private final WeakObjectRegistry<IRI, MemIRI> iriRegistry = new WeakObjectRegistry<>();
 
 	/**
-	 * Registry containing the set of MemTriple objects as used by a MemoryStore. This registry enables the reuse of
+	 * Registry containing the set of MemTripleTerm objects as used by a MemoryStore. This registry enables the reuse of
 	 * objects, minimizing the number of objects in main memory.
 	 */
-	private final WeakObjectRegistry<Triple, MemTriple> tripleRegistry = new WeakObjectRegistry<>();
+	private final WeakObjectRegistry<TripleTerm, MemTripleTerm> tripleTermRegistry = new WeakObjectRegistry<>();
 
 	/**
 	 * Registry containing the set of MemBNode objects as used by a MemoryStore. This registry enables the reuse of
@@ -76,13 +76,13 @@ public class MemValueFactory extends AbstractValueFactory {
 //	private final Cache<Value, MemLiteral> literalCache = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).weakKeys().weakValues().initialCapacity(1000).maximumSize(1000).build();
 //	private final Cache<Value, MemIRI> iriCache = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).weakKeys().weakValues().initialCapacity(1000).maximumSize(1000).build();
 //	private final Cache<Value, MemBNode> bNodeCache = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).weakKeys().weakValues().initialCapacity(1000).maximumSize(1000).build();
-//	private final Cache<Value, MemTriple> tripleCache = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).weakKeys().weakValues().initialCapacity(1000).maximumSize(1000).build();
+//	private final Cache<Value, MemTripleTerm> tripleCache = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).weakKeys().weakValues().initialCapacity(1000).maximumSize(1000).build();
 	public MemValueFactory() {
 	}
 
 	public void clear() {
 		iriRegistry.clear();
-		tripleRegistry.clear();
+		tripleTermRegistry.clear();
 		bnodeRegistry.clear();
 		literalRegistry.clear();
 		namespaceRegistry.clear();
@@ -103,8 +103,8 @@ public class MemValueFactory extends AbstractValueFactory {
 			return getMemURI((IRI) value);
 		} else if (value.isBNode()) {
 			return getMemBNode((BNode) value);
-		} else if (value.isTriple()) {
-			return getMemTriple((Triple) value);
+		} else if (value.isTripleTerm()) {
+			return getMemTriple((TripleTerm) value);
 		} else if (value.isLiteral()) {
 			return getMemLiteral((Literal) value);
 		} else {
@@ -166,13 +166,13 @@ public class MemValueFactory extends AbstractValueFactory {
 		}
 	}
 
-	private MemTriple getMemTriple(Triple triple) {
-		if (triple == null) {
+	private MemTripleTerm getMemTriple(TripleTerm tripleTerm) {
+		if (tripleTerm == null) {
 			return null;
-		} else if (isOwnMemTriple(triple)) {
-			return (MemTriple) triple;
+		} else if (isOwnMemTriple(tripleTerm)) {
+			return (MemTripleTerm) tripleTerm;
 		} else {
-			return tripleRegistry.get(triple);
+			return tripleTermRegistry.get(tripleTerm);
 		}
 	}
 
@@ -189,8 +189,8 @@ public class MemValueFactory extends AbstractValueFactory {
 		return value instanceof MemLiteral && ((MemLiteral) value).getCreator() == this;
 	}
 
-	private boolean isOwnMemTriple(Triple value) {
-		return value instanceof MemTriple && ((MemTriple) value).getCreator() == this;
+	private boolean isOwnMemTriple(TripleTerm value) {
+		return value instanceof MemTripleTerm && ((MemTripleTerm) value).getCreator() == this;
 	}
 
 	private boolean isOwnMemIRI(IRI value) {
@@ -237,10 +237,8 @@ public class MemValueFactory extends AbstractValueFactory {
 			return getOrCreateMemResource((Resource) value);
 		} else if (value.isLiteral()) {
 			return getOrCreateMemLiteral((Literal) value);
-		} else if (value.isTriple()) {
-			return getOrCreateMemTriple((Triple) value);
 		} else {
-			throw new IllegalArgumentException("value is not a Resource, Literal, or Triple: " + value);
+			throw new IllegalArgumentException("value is not a Resource, Literal, or TripleTerm: " + value);
 		}
 	}
 
@@ -252,6 +250,8 @@ public class MemValueFactory extends AbstractValueFactory {
 			return getOrCreateMemURI((IRI) resource);
 		} else if (resource.isBNode()) {
 			return getOrCreateMemBNode((BNode) resource);
+		} else if (resource.isTripleTerm()) {
+			return getOrCreateMemTripleTerm((TripleTerm) resource);
 		} else {
 			throw new IllegalArgumentException("resource is not a URI or BNode: " + resource);
 		}
@@ -334,17 +334,17 @@ public class MemValueFactory extends AbstractValueFactory {
 	/**
 	 * See {@link #getOrCreateMemValue(Value)} for description.
 	 */
-	public MemTriple getOrCreateMemTriple(Triple triple) {
-		MemTriple memTriple = getMemTriple(triple);
+	public MemTripleTerm getOrCreateMemTripleTerm(TripleTerm tripleTerm) {
+		MemTripleTerm memTriple = getMemTriple(tripleTerm);
 
 		if (memTriple == null) {
-			// Create a MemTriple and add it to the registry
-			MemTriple newMemTriple = new MemTriple(this, getOrCreateMemResource(triple.getSubject()),
-					getOrCreateMemURI(triple.getPredicate()), getOrCreateMemValue(triple.getObject()));
-			boolean wasNew = tripleRegistry.add(newMemTriple);
+			// Create a MemTripleTerm and add it to the registry
+			MemTripleTerm newMemTriple = new MemTripleTerm(this, getOrCreateMemResource(tripleTerm.getSubject()),
+					getOrCreateMemURI(tripleTerm.getPredicate()), getOrCreateMemValue(tripleTerm.getObject()));
+			boolean wasNew = tripleTermRegistry.add(newMemTriple);
 
 			if (!wasNew) {
-				return tripleRegistry.getOrAdd(triple, () -> newMemTriple);
+				return tripleTermRegistry.getOrAdd(tripleTerm, () -> newMemTriple);
 			} else {
 				return newMemTriple;
 			}
@@ -436,7 +436,7 @@ public class MemValueFactory extends AbstractValueFactory {
 	}
 
 	@Override
-	public Triple createTriple(Resource subject, IRI predicate, Value object) {
-		return getOrCreateMemTriple(super.createTriple(subject, predicate, object));
+	public TripleTerm createTripleTerm(Resource subject, IRI predicate, Value object) {
+		return getOrCreateMemTripleTerm(super.createTripleTerm(subject, predicate, object));
 	}
 }

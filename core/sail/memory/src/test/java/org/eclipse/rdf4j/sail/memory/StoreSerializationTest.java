@@ -22,10 +22,9 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Triple;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
@@ -180,11 +179,11 @@ public class StoreSerializationTest {
 
 		ValueFactory factory = store.getValueFactory();
 		BNode b = factory.createBNode("b");
-		Triple triple = factory.createTriple(RDF.TYPE, RDF.TYPE, RDF.TYPE);
+		TripleTerm tripleTerm = factory.createTripleTerm(RDF.TYPE, RDF.TYPE, RDF.TYPE);
 
 		try (SailConnection con = store.getConnection()) {
 			con.begin();
-			con.addStatement(b, RDF.REIFIES, triple);
+			con.addStatement(b, RDF.REIFIES, tripleTerm);
 			con.commit();
 
 		}
@@ -198,7 +197,7 @@ public class StoreSerializationTest {
 					false)) {
 				assertTrue(iter.hasNext());
 				Statement next = iter.next();
-				assertEquals(next.getObject(), triple);
+				assertEquals(next.getObject(), tripleTerm);
 			}
 		}
 		store.shutDown();
