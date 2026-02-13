@@ -214,9 +214,20 @@ public class NTriplesUtil {
 	 * @throws IllegalArgumentException If the supplied tripleTerm could not be parsed correctly.
 	 */
 	private static TripleMatch parseTripleInternal(String nTriplesTriple, ValueFactory valueFactory) {
+		String tripleEnd = "";
+		int startIndex = -1;
+
 		if (nTriplesTriple.startsWith("<<(")) {
-			String triple = nTriplesTriple.substring(3);
-			int offset = 3;
+			startIndex = 3;
+			tripleEnd = ")>>";
+		} else if (nTriplesTriple.startsWith("<<")) {
+			startIndex = 2;
+			tripleEnd = ">>";
+		}
+
+		if (startIndex > -1) {
+			String triple = nTriplesTriple.substring(startIndex);
+			int offset = startIndex;
 
 			while (!triple.isEmpty() && Character.isWhitespace(triple.charAt(0))) {
 				triple = triple.substring(1);
@@ -282,8 +293,8 @@ public class NTriplesUtil {
 				}
 			}
 
-			if (triple.endsWith(")>>")) {
-				offset += 3;
+			if (triple.endsWith(tripleEnd)) {
+				offset += startIndex;
 				return new TripleMatch(valueFactory.createTripleTerm(subject, predicate, object), offset);
 			}
 		}

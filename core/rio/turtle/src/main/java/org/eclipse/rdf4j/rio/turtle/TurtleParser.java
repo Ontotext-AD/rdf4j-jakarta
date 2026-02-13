@@ -612,6 +612,10 @@ public class TurtleParser extends AbstractRDFParser {
 			return parseTripleTerm();
 		}
 
+		if (peekIsReifiedTriple()) {
+			return parseReifiedTriple();
+		}
+
 		int c = peekCodePoint();
 
 		if (c == '<') {
