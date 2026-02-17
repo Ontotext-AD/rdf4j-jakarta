@@ -25,6 +25,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.TripleTerm;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.Query;
@@ -413,6 +414,9 @@ public class SailRepositoryConnection extends AbstractRepositoryConnection imple
 	@Override
 	protected void addWithoutCommit(Resource subject, IRI predicate, Value object, Resource... contexts)
 			throws RepositoryException {
+		if (subject instanceof TripleTerm) {
+			throw new RepositoryException("Triple terms are not allowed in subject position.");
+		}
 		try {
 			sailConnection.addStatement(subject, predicate, object, contexts);
 		} catch (SailReadOnlyException e) {
