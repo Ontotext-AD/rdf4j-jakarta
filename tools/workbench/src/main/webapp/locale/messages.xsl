@@ -115,6 +115,7 @@
 	</variable>
 	<variable name="true.label">Yes</variable>
 	<variable name="false.label">No</variable>
+	<variable name="repository-default.label">Repository default</variable>
 	<variable name="none.label">None</variable>
 	<variable name="all.label">All</variable>
 	<variable name="readable.label">Readable</variable>
@@ -159,6 +160,9 @@
 	<variable name="subject.label">Subject</variable>
 	<variable name="upload-file.desc">
 		Select the file containing the RDF data you wish to upload
+	</variable>
+	<variable name="upload-file.hint">
+		Gzip-compressed files such as data.ttl.gz are accepted and decompressed automatically.
 	</variable>
 	<variable name="upload-file.label">RDF Data File</variable>
 	<variable name="upload-text.desc">
