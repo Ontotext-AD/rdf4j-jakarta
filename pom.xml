@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.rdf4j</groupId>
 	<artifactId>rdf4j</artifactId>
-	<version>6.2.0-SNAPSHOT</version>
+	<version>6.2.0-jakarta-Shacl-Improvements-TR2</version>
 	<packaging>pom</packaging>
 	<name>Eclipse RDF4J</name>
 	<description>An extensible Java framework for RDF and SPARQL</description>
@@ -98,6 +98,8 @@
 		<testcontainers.version>2.0.5</testcontainers.version>
 		<mockito.javaagent>-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.javaagent>
 		<argLine />
+		<internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
+		<snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
 	</properties>
 	<profiles>
 		<profile>
@@ -1462,4 +1464,16 @@
 		<developerConnection>scm:git:git@github.com:eclipse/rdf4j.git</developerConnection>
 		<url>https://github.com/eclipse/rdf4j</url>
 	</scm>
+	<distributionManagement>
+		<repository>
+			<id>internal</id>
+			<name>OWLIM Releases repository</name>
+			<url>${internal.repo}</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>OWLIM Snapshots repository</name>
+			<url>${snapshots.repo}</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
